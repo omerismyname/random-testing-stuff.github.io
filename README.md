@@ -1,3 +1,3 @@
-# random-testing-stuff
+## Random testing stuff
 
-## test
+This is a repo with folders for things I do that I don't push up to my launchpad.
