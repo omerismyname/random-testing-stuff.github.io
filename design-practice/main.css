@@ -36,7 +36,7 @@ body {
 }
 
 .main-container .heading {
-  margin-top: 10vmin;
+  margin-top: 6vmax;
   font-size: 4rem;
   font-weight: 300;
   color: var(--primary-colour);
