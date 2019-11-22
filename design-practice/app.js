@@ -1,5 +1,4 @@
-var request = new XMLHttpRequest();
-var apiURL = "https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/44418"
+const apiURL = "https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/44418"
 
 function mostFrequent(arr) {
   let counts = {};
@@ -36,8 +35,10 @@ fetch(apiURL, {
   let icon = document.createElement("img");
   icon.src = "https://www.metaweather.com/static/img/weather/" + modeSource.weather_state_abbr + ".svg";
   box.appendChild(icon);
+  let loader = document.querySelector(".loader");
 
-  setTimeout(() => {let loader = document.querySelector(".loader"); loader.style.opacity = "0";}, 5);
-  setTimeout(() => {box.parentNode.style.opacity = "1";}, 10);
+  setTimeout(() => {loader.style.opacity = "0";}, 5);
+  setTimeout(() => {box.parentNode.style.opacity = "1"; box.parentNode.style.display = "block";}, 10);
+  setTimeout(() => {loader.style.display = "none";}, 5010);
 })
 .catch(() => console.log("Error accessing Weather API"));
