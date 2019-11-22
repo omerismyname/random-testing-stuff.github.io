@@ -11,8 +11,8 @@ fetch(apiURL, {
   box.appendChild(icon);
 
   let loader = document.querySelector(".loader");
-  setTimeout(() => {loader.style.opacity = "0";}, 5);
-  setTimeout(() => {box.parentNode.style.opacity = "1"; box.parentNode.style.display = "block";}, 10);
-  setTimeout(() => {loader.style.display = "none";}, 510); // after fade out (animation lasts 0.5s)
+  loader.style.opacity = "0";
+  box.parentNode.style.opacity = "1";
+  setTimeout(() => {loader.style.display = "none";}, 500); // after fade out (animation lasts 0.5s)
 })
 .catch(() => console.log("Error accessing Weather API"));
