@@ -1,0 +1,82 @@
+:root {
+  --primary-colour: #ac8ed4;
+  font-size: 2vmin;
+}
+
+body {
+  background: #0f0c11;
+  font-family: "Raleway", Verdana, sans-serif;
+  margin: 0;
+  border: 0;
+  width: 100vw;
+}
+
+.main-container {
+  margin: 10vmin auto 0 auto;
+  width: 50vw;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out 0.1s;
+  z-index: 1;
+}
+
+.main-container .imgbox {
+  margin: auto;
+  width: 50vmin;
+  height: 50vmin;
+  border-radius: 50%;
+  background: #ac8ed414;
+}
+
+.main-container .imgbox img {
+  width: 100%;
+  height: auto;
+}
+
+.main-container .heading {
+  margin-top: 10vmin;
+  font-size: 4rem;
+  font-weight: 300;
+  color: var(--primary-colour);
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+  border-top: 1px solid var(--primary-colour);
+}
+
+.loader {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none;
+}
+
+.loader .cloud {
+  position: absolute;
+  left: 40%;
+  bottom: 35%;
+  animation: load-slide 2s ease-in-out infinite alternate, load-bob 3s ease-in-out infinite;
+  fill: rgba(255, 255, 255, 0.4)
+}
+
+.loader .cloud:nth-of-type(1) {
+  margin-bottom: 1em;
+    animation: load-slide 2s ease-in-out infinite alternate-reverse, load-bob 3s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes load-slide {
+  0% {transform: translateX(0);}
+  100% {transform: translateX(100%);}
+}
+
+@keyframes load-bob {
+  0% {height: 5em}
+  25% {height: 4.8em}
+  50% {height: 5em}
+  75% {height: 4.8em}
+  100% {height: 5em}
+}
