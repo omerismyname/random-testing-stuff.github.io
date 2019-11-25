@@ -220,7 +220,7 @@ body {
   background: linear-gradient(rgb(202, 135, 202), rgb(155, 109, 155)); 
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 640px) {
   .centre-container {
     top: calc(50% + 5rem);
   }
