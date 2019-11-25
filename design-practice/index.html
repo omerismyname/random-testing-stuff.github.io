@@ -21,8 +21,52 @@
       </svg>
   </div>
   <div class="main-container">
-    <div class="imgbox"></div>
-    <h3 class="heading">Weather in London</h3>
+    <div class="info" id="min-temperature">Min: 
+        <p></p>
+    </div>
+    <div class="info" id="max-temperature">Max: 
+        <p></p>
+    </div>
+    <div class="info" id="pressure">
+        <p></p>
+    </div>
+    <div class="centre-container" day="0">
+      <div class="imgbox"></div>
+      <h3 class="heading">Weather in London</h3>
+      <p class="day">Today</p>
+      <div class="btns">
+        <button class="round-btn prev-day" onclick="prevDay();">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+        <button class="round-btn next-day" onclick="nextDay();">
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="info" id="wind">
+      <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <line x1="12" y1="19" x2="12" y2="5"></line>
+        <polyline points="5 12 12 5 19 12"></polyline>
+      </svg>
+      <p></p>
+    </div>
+    <div class="info" id="humidity">
+      <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+      </svg>
+      <p></p>
+    </div>
+    <div class="info" id="visibility">
+      <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+      <p></p>
+    </div>
   </div>
   <script src="app.js"></script>
 </body>
