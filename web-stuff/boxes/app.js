@@ -59,9 +59,11 @@ function avg(...values) {
   }
   return x / values.length;
 }
- function randInt(max = 100) {
-   return Math.floor(Math.random() * max);
- }
+
+function randInt(max = 100) {
+  return Math.floor(Math.random() * max);
+}
+
 //code by Jon Kantner from CSS-Tricks
   // https://css-tricks.com/converting-color-spaces-in-javascript/
   // https://codepen.io/jkantner/pen/VVEMRK
