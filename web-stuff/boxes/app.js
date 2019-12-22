@@ -4,11 +4,7 @@ function getSecondary(h, s, l) {
 }
 
 class Colour {
-  constructor(
-    h = Math.floor(Math.random() * 360),
-    s = Math.floor(Math.random() * 100),
-    l = Math.floor(Math.random() * 100),
-    secondary = new Colour(...getSecondary(h, s, l), null)
+  constructor(h = randInt(360), s = randInt(), l = randInt(), secondary = new Colour(...getSecondary(h, s, l), null)
   ) {
     this.h = h;
     this.s = s;
@@ -21,7 +17,7 @@ class Colour {
 
 const container = document.querySelector(".container");
 function loadBoxes() {
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 10; i++) {
     const wrapper = document.createElement("div");
     const box = document.createElement("div");
     const tl = document.createElement("span");
@@ -63,7 +59,9 @@ function avg(...values) {
   }
   return x / values.length;
 }
-
+ function randInt(max = 100) {
+   return Math.floor(Math.random() * max);
+ }
 //code by Jon Kantner from CSS-Tricks
   // https://css-tricks.com/converting-color-spaces-in-javascript/
   // https://codepen.io/jkantner/pen/VVEMRK
