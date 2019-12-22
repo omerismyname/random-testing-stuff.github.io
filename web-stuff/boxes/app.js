@@ -53,11 +53,7 @@ window.addEventListener('scroll', function() {
 loadBoxes();
 
 function avg(...values) {
-  let x = 0;
-  for (let v of values) {
-    x += v;
-  }
-  return x / values.length;
+  return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
 function randInt(max = 100) {
