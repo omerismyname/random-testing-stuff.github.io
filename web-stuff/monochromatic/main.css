@@ -1,0 +1,35 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+}
+
+html {
+  height: 100%;
+  font-size: 2vmin;
+}
+
+body {
+  height: 100%;
+}
+
+::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
+  width: 5px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111;
+}
+
+::-webkit-scrollbar-track:horizontal {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: white;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777; 
+}
