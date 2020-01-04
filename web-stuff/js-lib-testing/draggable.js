@@ -63,8 +63,8 @@ function draggable(e, parent = document, callback = () => {}, touch_action = "no
     }
 
     function getOrigin(e) {
-      var o = window.getComputedStyle(e).transformOrigin.split(" ");
-      return [parseInt(o[0].slice(0, -2)), parseInt(o[1].slice(0, -2))];
+      var o = window.getComputedStyle(e).transformOrigin.replace(/px/, "").split(" ");
+      return [parseInt(o[0]), parseInt(o[1])];
     }
 
     if (events.type === "pointer") {
