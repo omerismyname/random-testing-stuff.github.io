@@ -7,16 +7,13 @@
 html {height: 100%;}
 
 ::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
+  height: 5px;
   width: 5px;
   border-radius: 5px;
 }
 
-::-webkit-scrollbar-track {
-  background: #222025;
-}
-
-::-webkit-scrollbar-track:horizontal {
-  background: transparent;
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+  background: #111;
 }
 
 ::-webkit-scrollbar-thumb {
