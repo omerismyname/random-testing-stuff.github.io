@@ -1,0 +1,73 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+}
+:root {
+  height: 100%;
+  font-size: 2vmin;
+}
+
+body {
+  height: 100%;
+  background: #111;
+  touch-action: none;
+}
+
+section {
+  height: 100%;
+  width: 50%;
+  --width: 10vw;
+  background: #882b2b;
+  position: relative;
+}
+
+.box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100px;
+  width: 100px;
+  background: #d2c4d6;
+}
+
+.box:nth-of-type(2n) {
+  border-radius: 50%;
+}
+
+.boxleft {
+  left: calc(50% - var(--width));
+  width: 200px;
+  height: 200px;
+}
+
+.boxright {
+  left: calc(50% + var(--width));
+}
+
+.boxtop {
+  top: calc(50% - var(--width));
+}
+
+.boxbottom {
+  top: calc(50% + var(--width));
+}
+
+::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
+  width: 5px;
+  height: 5px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: white;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777; 
+}
