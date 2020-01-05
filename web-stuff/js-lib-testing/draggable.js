@@ -43,7 +43,7 @@ function draggable(e, parent = document, callback = () => {}, touch_action = "no
     function handleGestureStart(evt) {
       evt.preventDefault();
       e.style.transition = "initial";
-      t_origin = window.getComputedStyle(e).transformOrigin.replace(/px/, "").split(" ").map(n=>parseFloat(n));
+      t_origin = window.getComputedStyle(e).transformOrigin.split(" ").map(n=>parseFloat(n));
       [initialX, initialY] = getGesturePointFromEvent(evt, offsetX, offsetY);
       parent.addEventListener(events.move, handleGestureMove, true);
       parent.addEventListener(events.end, handleGestureEnd, true);
