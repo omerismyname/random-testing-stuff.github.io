@@ -43,7 +43,7 @@ function draggable(e, parent = document, callback = () => {}, touch_action = "no
     function handleGestureStart(evt) {
       evt.preventDefault();
       e.style.transition = "initial";
-      t_origin = getOrigin(e);
+      t_origin = window.getComputedStyle(e).transformOrigin.replace(/px/, "").split(" ").map(n=>parseFloat(n));
       [initialX, initialY] = getGesturePointFromEvent(evt, offsetX, offsetY);
       parent.addEventListener(events.move, handleGestureMove, true);
       parent.addEventListener(events.end, handleGestureEnd, true);
@@ -60,11 +60,6 @@ function draggable(e, parent = document, callback = () => {}, touch_action = "no
         y = evt.clientY;
       }
       return [x - xOffset, y - yOffset];
-    }
-
-    function getOrigin(e) {
-      var o = window.getComputedStyle(e).transformOrigin.replace(/px/, "").split(" ");
-      return [parseInt(o[0]), parseInt(o[1])];
     }
 
     if (events.type === "pointer") {
