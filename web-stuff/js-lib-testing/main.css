@@ -15,11 +15,15 @@ body {
 }
 
 section {
-  height: 100%;
+  height: 50%;
   width: 50%;
-  --width: 10vw;
+  --width: 5vw;
   background: #882b2b;
   position: relative;
+}
+
+.label {
+  font-size: 3rem;
 }
 
 .box {
@@ -44,6 +48,7 @@ section {
 
 .boxright {
   left: calc(50% + var(--width));
+  background: green;
 }
 
 .boxtop {
@@ -52,6 +57,19 @@ section {
 
 .boxbottom {
   top: calc(50% + var(--width));
+}
+
+.boxavg {
+  width: 1rem;
+  height: 1rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: mintcream;
+  pointer-events: none;
+  box-shadow: 0.2rem 0.2rem 0.5rem rgba(0,0,0,0.5);
 }
 
 ::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
