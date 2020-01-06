@@ -1,0 +1,108 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+:root {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: futura-pt, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 10vh;
+  max-height: 5rem;
+  min-height: 2rem;
+  position: sticky;
+  top: 0;
+  background: white;
+  box-shadow: 0rem 0.2rem 0.5rem rgba(0,0,0,0.5);
+  z-index: 4;
+}
+
+header nav {
+  display: flex;
+  width: 90%;
+  margin: 0 auto;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav h1 {
+  font-size: 2.5rem;
+}
+
+nav h1, nav ul {
+  flex: 1;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.5rem;
+}
+
+nav ul .bob {
+  position: absolute;
+  z-index: -2;
+  background: linear-gradient(120deg, #f12711, #f5af19);
+  transform: scale(1.5);
+  transition: all 0.3s ease-in-out;
+  opacity: 0.3;
+}
+
+section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0rem 0.5rem 1rem rgba(0,0,0,0.3);
+}
+
+section h2 {
+  font-size: 5rem;
+  color: white;
+}
+
+#home {background: linear-gradient(120deg, #f12711, #f5af19); z-index: 3;}
+#about {background: linear-gradient(120deg, #373b44, #4286f4); z-index: 2;}
+#contact {background: linear-gradient(120deg, #1f4037, #99f2c8); z-index: 1;}
+
+body::-webkit-scrollbar, body::-webkit-scrollbar-thumb {
+  height: 5px;
+  width: 5px;
+  border-radius: 5px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: white;
+}
+
+body::-webkit-scrollbar-track, body::-webkit-scrollbar-corner {
+  background: #111;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: #777; 
+}
+
+::selection {
+  background: #302b2b;
+  color: white;
+}

@@ -4,7 +4,7 @@
   border: none;
 }
 
-html {height: 100%;}
+:root {height: 100%;}
 
 ::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
   height: 5px;
@@ -22,4 +22,9 @@ html {height: 100%;}
 
 ::-webkit-scrollbar-thumb:hover {
   background: #777; 
+}
+
+::selection {
+  background: #302b2b;
+  color: white;
 }
