@@ -1,0 +1,139 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:root {
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  height: 100%;
+  background: #111;
+  color: #edebde;
+}
+
+header {
+  height: 10vh;
+  min-height: 3rem;
+  max-height: 4rem;
+  background: #be9b7b;
+  color: black;
+  display: flex;
+  align-items: center;
+}
+
+header h1, header p {
+  white-space: nowrap;
+}
+
+header h1 {
+  padding-left: 2rem;
+}
+
+header p {
+  padding-left: 1rem;
+  padding-bottom: 0.7rem;
+  align-self: flex-end;
+}
+
+main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 5vh;
+}
+
+main .item {
+  min-width: 20rem;
+  width: 20%;
+  min-height: 2rem;
+  border: solid rgba(237, 235, 222, 0.3) 1px;
+  border-radius: 0.5rem;
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(237, 235, 222, 0.8) 1px;
+  color: white;
+}
+
+.item:hover .icon {
+  opacity: 1;
+}
+
+main .item .icon {
+  height: 2rem;
+  opacity: 0.5;
+}
+
+main .item .name {
+  padding-left: 1rem;
+}
+
+main .item .size {
+  margin-left: auto;
+  font-size: 1.2rem;
+}
+
+main .back {
+  display: none;
+}
+
+@media only screen and (max-width: 900px) {
+  main {
+    justify-content: center;
+  }
+}
+
+@media only screen and (max-width: 37rem) {
+  header p {
+    display: none;
+  }
+  header {
+    justify-content: center;
+    text-align: center;
+  }
+  header h1 {
+    padding: 0;
+  }
+}
+
+::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
+  height: 5px;
+  width: 5px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: white;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777; 
+}
+
+::selection {
+  background: #d5cccc;
+}
