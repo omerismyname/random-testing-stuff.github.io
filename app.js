@@ -7,10 +7,7 @@ if (dir.length > 1 && dir[1] != "") {
 }
 
 const options = {
-  method: "GET", 
-  headers: {
-    'Authorization': "token" + ' ' + "cfaabd0b347d1798d0be307a05f73bc3cc2842bd"
-  }
+  method: "GET"
 }
 
 fetch("https://api.github.com/repos/omerismyname/random-testing-stuff/contents/" + url, options)
