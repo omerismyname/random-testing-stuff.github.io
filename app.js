@@ -24,35 +24,20 @@ fetch("https://api.github.com/repos/omerismyname/random-testing-stuff/contents/"
     if (url != "") {
       const back = document.querySelector("main .back");
       back.style.display = "block";
-      back.onclick = function() {
-        const arr = dir[1].split("/");
-        let str = "";
-        for (let i = arr.length - 1; i > 0; i--) {
-          if (arr[i] == "") {arr.pop()} else {break}
-        }
-        for (let i = 0; i < arr.length - 1; i++) {
-          str += arr[i] + "/";
-        }
-        window.location.href = "/?dir=" + str;
+      let arr = dir[1].split("/");
+      let str = "";
+      for (let i = arr.length - 1; i > 0; i--) {
+        if (arr[i] == "") {arr.pop()} else {break}
       }
+      for (let i = 0; i < arr.length - 1; i++) {
+        str += arr[i] + "/";
+      }
+      back.href = "/?dir=" + str;
     }
     for (const d of data) {
-      let item = document.createElement("div");
-      let itemType = document.createElement("img");
-      let itemName = document.createElement("span");
-      
-      item.className = "item";
-      itemType.className = "icon";
-      itemName.className = "name";
-      
-      itemType.src = (d.type == "dir") ? "/icons/folder.svg" : "/icons/file.svg";
-      itemName.innerHTML = d.name;
-
-      
-      item.appendChild(itemType);
-      item.appendChild(itemName);
-
-
+      const link = document.createElement("a");
+      let fsize_str = "";
+      const [icon_src, icon_alt] = (d.type == "dir") ? ["/icons/folder.svg", "folder"] : ["/icons/file.svg", "file"];
 
       if (d.type == "file") {
         let itemSize = document.createElement("span");
@@ -74,25 +59,15 @@ fetch("https://api.github.com/repos/omerismyname/random-testing-stuff/contents/"
             unit = "KB";
           }
         }
-  
-        itemSize.innerHTML = size + unit;
-        item.appendChild(itemSize);
+        fsize_str = '<span class="size">'+ (size + unit) + '</span>';
       }
 
 
+      link.innerHTML = '<div class="item"><img class="icon" src="' + icon_src + '" alt="' + icon_alt + '"></img><span class="name">' + d.name + '</span>' + fsize_str + '</div>';
 
-      container.appendChild(item);
+      container.appendChild(link);
 
-      item.setAttribute("path", d.path);
-      item.onclick = (d.type == "dir") ? navigateFolder : navigateFile;
+      link.href = (d.type == "dir") ? "?dir=" + d.path : "/" + d.path;
     }
   })
   .catch(error => console.log("Error while fetching data\n" + error));
-
-function navigateFile() {
-  window.location.href = "/" + this.getAttribute("path");
-}
-
-function navigateFolder() {
-  window.location.href = "?dir=" + this.getAttribute("path");
-}
