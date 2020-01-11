@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="apple-touch-startup-image" href="/icon.png">
+  <meta charset="utf-8" />
+  <title>Form Test</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#111">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+</head>
+<body>
+  <header><h1>Form Test</h1></header>
+    <section class="form">
+      <span class="warning">username must be alphanumeric</span>
+      <form action="http://localhost:7000/guestbook" method="post" id="guestbook" onsubmit="return onFormSubmit();">
+        <span>
+          <label for="name">Name</label>
+          <input class="line" type="text" name="name" id="name" required minlength="3" maxlength="30" autocomplete="off">
+        </span>
+        <span>
+          <label for="message">Message</label>
+          <textarea class="line area" name="message" id="message" cols="1" rows="1" maxlength="500"></textarea>
+        </span>
+
+        <input class="btn" type="submit" value="Send">
+      </form>
+    </section>
+    <h3>Guestbook</h3>
+    <section class="guestbook">
+
+    </section>
+    <script src="app.js"></script>
+</body>
+</html>
