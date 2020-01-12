@@ -2,10 +2,16 @@ const line = document.querySelector(".form form span .line");
 const textarea = document.querySelector(".form form span textarea");
 const warning = document.querySelector(".form .warning");
 
-textarea.addEventListener("blur", function() {
+textarea.addEventListener("blur", () => {
   if (line.checkValidity()) {
     textarea.style.borderColor = "lightgreen";
   } else {
+    textarea.style.borderColor = "";
+  }
+});
+
+line.addEventListener("blur", () => {
+  if (line.value == "" && textarea.value == "") {
     textarea.style.borderColor = "";
   }
 });

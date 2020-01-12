@@ -200,5 +200,10 @@ h3 {
 }
 
 ::selection {
-  background: #302b2b;
+  background: #999;
+}
+
+mark {
+  background: rgba(226, 211, 128, 0.5);
+  color: inherit;
 }
