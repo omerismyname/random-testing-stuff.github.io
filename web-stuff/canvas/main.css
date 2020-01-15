@@ -1,0 +1,99 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+}
+
+:root {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  background: #111;
+  font-family: 'Roboto', sans-serif;
+  color: white;
+}
+
+main {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+main button {
+  height: 3rem;
+  width: 10rem;
+  background: none;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  border: solid 2px #777;
+  color: inherit;
+  font-size: 2rem;
+  margin: auto;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+main button:hover, main button:focus, main button:active {
+  border-color: white;
+  outline: none;
+}
+
+main button:hover, main button:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+section {
+  height: 80vmin;
+  width: 80vmin;
+  flex: none;
+  background: #0d0d16;
+  border: solid 0.5rem #777;
+  border-radius: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+section canvas {
+  height: 100%;
+  width: 100%;
+  flex: none;
+}
+
+.frame {
+  position: absolute;
+  z-index: 1;
+  font-size: 1.2rem;
+  top: 2rem;
+  left: 2rem;
+}
+
+::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
+  height: 5px;
+  width: 5px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: white;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777; 
+}
+
+::selection {
+  background: #999;
+}
