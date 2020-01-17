@@ -2,7 +2,6 @@ function init() {
   const player = new MovingSquare("centre", "middle", 50, "#b8f");
   const bots = [];
   const timer = new CanvasText("00:00", undefined, "lavender", "center", "centre", "top", 0, 50);
-  const frame = document.querySelector(".frame");
 
   game.pendingInputs = {
     up: false,
@@ -13,10 +12,15 @@ function init() {
   game.frame = 0;
   game.startTime = new Date().getTime();
   game.stage = 2;
+  game.points = 0;
   requestAnimationFrame(update);
 
   function update() {
     clearCanvas();
+
+    if (game.computerState > 0) {
+      game.pendingInputs = getComputerAction(player, bots);
+    }
 
     for (const bot of bots) {
       [bot.dx, bot.dy] = getVelocity({
@@ -47,15 +51,19 @@ function init() {
     if (game.frame % 400 == 0) {
       bots.push(...generateBots(player, Math.floor(game.stage / 2)));
       game.stage = Math.pow(game.stage, 1.05);
-      console.log(game.stage);
     }
 
-    frame.innerHTML = game.frame;
+    pointsDisplay.innerHTML = game.points = Math.floor(game.frame / 5);
+    if (game.points > game.highScore) {
+      game.highScore = game.points;
+      highScoreDisplay.innerHTML = game.highScore;
+    }
 
     game.frame++;
 
     if (gameLost(player, bots)) {
       endScreen();
+      document.cookie = "highscore=" + game.highScore + "; path=/web-stuff/canvas/";
       game.running = false;
       shapes = [];
       document.onkeydown = null;
