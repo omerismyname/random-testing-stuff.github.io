@@ -5,11 +5,11 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  installApp.style = "";
+  installApp.style = "flex";
 });
 
 btn.addEventListener('click', (e) => {
-  installApp.style.display = 'none';
+  installApp.style.display = "";
   if (deferredPrompt) {deferredPrompt.prompt();}
   deferredPrompt.userChoice
   .then(choiceResult => {
@@ -20,7 +20,3 @@ btn.addEventListener('click', (e) => {
     deferredPrompt = null;
   });
 });
-
-if (window.matchMedia('(display-mode: standalone)').matches) {
-  installApp.style.display = "none";
-}

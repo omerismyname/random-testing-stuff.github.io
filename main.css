@@ -109,7 +109,7 @@ main .back {
   font-weight: 400;
   border-radius: 0.5rem;
   background: #30343f;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
