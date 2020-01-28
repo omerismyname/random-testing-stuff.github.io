@@ -1,32 +1,22 @@
+const btn = document.querySelector(".installApp > button");
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e => {
   deferredPrompt = e;
   showInstallPromotion();
-  }
-);
+});
 
 function showInstallPromotion() {
-  const installApp = document.createElement("div");
-  installApp.className = "installApp";
-
-  const text = document.createElement("span");
-  text.innerHTML = "Access files offline with the app!";
-  const btn = document.createElement("button");
-  btn.innerHTML = "Install";
-
   btn.addEventListener('click', (e) => {
     installApp.style.display = 'none';
     deferredPrompt.prompt();
     deferredPrompt.userChoice
-      .then(choiceResult => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('Added to home screen');
-          window.navigator.serviceWorker.controller.postMessage(["loadAllFiles"]);
-        }
-        deferredPrompt = null;
-      });
+    .then(choiceResult => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('Added to home screen');
+        window.navigator.serviceWorker.controller.postMessage(["loadAllFiles"]);
+      }
+      deferredPrompt = null;
+    });
   });
-
-  installApp.append(text, btn);
-  document.body.append(installApp);
+  installApp.style = "";
 }
