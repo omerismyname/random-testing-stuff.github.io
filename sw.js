@@ -1,19 +1,19 @@
 const cacheName = "dynamic-cache-v1";
 const precacheResources = [
   "index.html",
-  "index.html?offline",
-  "index.html?dir=",
   "main.css",
   "app.js",
   "pwa.js",
-  "icon.png",
+  "favicon.ico",
+  "favicon.png",
+  "icon-72.png",
+  "icon-144.png",
   "icon-192.png",
   "icon-512.png",
   "icons/wifi-off.svg",
   "icons/corner-down-left.svg",
   "icons/file.svg",
-  "icons/folder.svg",
-  "icons/file.svg"
+  "icons/folder.svg"
 ];
 let online = true;
 let usingCached = true;
@@ -78,13 +78,35 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener("message", e => {
   let responses = [];
-  for (d of e.data) {
+  for (const d of e.data) {
     if (d === "onlineQuery") {
       responses.push({name: "onlineQuery", value: online});
     }
     if (d === "cachedQuery") {
       responses.push({name: "cachedQuery", value: usingCached});
     }
+    if (d === "loadAllFiles") {
+      loadAllFiles();
+    }
   }
   e.source.postMessage(responses);
 });
+
+function loadAllFiles() {
+  fetch("https://cool-api.herokuapp.com/parsedTree?files")
+    .then(response => response.json())
+    .then(files => {
+      for (const file of files) {
+        caches.open(cacheName)
+          .then(cache => {
+            cache.match(file)
+              .then(cacheMatched => {
+                if (!cacheMatched) {
+                  cache.add(file);
+                }
+              })
+          })
+      }
+    })
+    .catch(err => console.log("Could not fetch files.\n" + err))
+}

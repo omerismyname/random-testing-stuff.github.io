@@ -3,7 +3,17 @@
   "name": "Testing",
   "icons": [
     {
-      "src": "/icon.png",
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    },
+    {
+      "src": "/icon-72.png",
+      "type": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "/icon-144.png",
       "type": "image/png",
       "sizes": "144x144"
     },

@@ -1,13 +1,11 @@
 const container = document.querySelector("main");
 
 const url = new URL(window.location.href);
-const params = new URLSearchParams(url.search);
-const dir = params.get("dir") || "";
+const dir = sessionStorage.getItem("dir") || new URLSearchParams(url.search).get("dir") || "";
 
 async function app() {
-  const responses = await queryWorker("onlineQuery", "cachedQuery");
-  let online = navigator.onLine || true;
-  const usingCached = responses[1] || false;
+  let online = navigator.onLine;
+  const usingCached = await queryWorker("cachedQuery") || false;
 
   if (!online && !usingCached) {
     loadOfflinePage();
@@ -17,17 +15,15 @@ async function app() {
       document.querySelector("header p").innerHTML = "Offline";
       document.querySelector("header").style.backgroundColor = "mediumpurple";
     }
-    const options = {
-      method: "GET"
-    };
   
-    fetch("https://api.github.com/repos/omerismyname/random-testing-stuff/contents/" + dir, options)
+    fetch("https://cool-api.herokuapp.com/tree")
       .then(response => {
         if (response.ok) {
           return response;
         }
       })
       .then(response => response.json())
+      .then(data => parseData(data))
       .then(data => {
         if (dir != "") {addBackButton();}
     
@@ -38,13 +34,13 @@ async function app() {
           const icon = createElement("img", "icon");
           const name = createElement("span", "name");
     
-          [icon.src, icon.alt] = (d.type === "dir") ? ["/icons/folder.svg", "folder"] : ["/icons/file.svg", "file"];
+          [icon.src, icon.alt] = (d.type === "dir" || d.type === "tree") ? ["/icons/folder.svg", "folder"] : ["/icons/file.svg", "file"];
     
-          name.innerHTML = d.name;
+          name.innerHTML = d.path.split("/").pop();
           
           item.append(icon, name);
     
-          if (d.type === "file") {
+          if (d.type === "file" || d.type === "blob") {
             const size = createElement("span", "size");
             size.innerHTML = formatSize(d.size);
             item.appendChild(size);
@@ -52,8 +48,15 @@ async function app() {
           
           link.appendChild(item);
           container.appendChild(link);
-          
-          link.href = (d.type === "dir") ? "?dir=" + d.path : "/" + d.path;
+
+          if (d.type === "dir" || d.type === "tree") {
+            link.onclick = () => {
+              sessionStorage.setItem('dir', d.path);
+            }
+            link.href = ".";
+          } else {
+            link.href = "/" + d.path;
+          }
         }
       })
       .catch(err => {
@@ -62,6 +65,18 @@ async function app() {
         loadOfflinePage();
       });
   }
+}
+
+
+function parseData(data) {
+  const parsedDataArr = [];
+  const dirLength = (dir === "") ? 0 : dir.split("/").length;
+  for (const d of data) {
+    if (d.path.indexOf(dir) === 0 && d.path.split("/").length === dirLength + 1) {
+      parsedDataArr.push(d);
+    }
+  }
+  return parsedDataArr;
 }
 
 
@@ -95,7 +110,10 @@ function addBackButton() {
   const back = document.querySelector("main .back");
   back.style.display = "block";
 
-  back.href = "/?dir=" + dir.split('/').slice(0, -1).join('/');
+  back.onclick = () => {
+    sessionStorage.setItem("dir", dir.split('/').slice(0, -1).join('/'));
+  }
+  back.href = ".";
 }
 
 function loadOfflinePage() {
@@ -112,7 +130,10 @@ function loadOfflinePage() {
   message.innerHTML = "Sorry, these files can't be loaded since you're offline.";
 
   backBtn.innerHTML = "Go back";
-  backBtnLink.href = "/?dir=" + dir.split('/').slice(0, -1).join('/');
+  backBtn.onclick = () => {
+    sessionStorage.setItem("dir", dir.split('/').slice(0, -1).join('/'));
+  }
+  backBtnLink.href = ".";
   
   backBtnLink.appendChild(backBtn);
   cannotLoad.append(noConnectionImage, message, backBtnLink);
@@ -123,7 +144,7 @@ async function queryWorker(...queries) {
   return new Promise(res => {
     navigator.serviceWorker.onmessage = e => {
       const responses = [];
-      for ([i,d] of e.data.entries()) {
+      for (let [i,d] of e.data.entries()) {
         if (d.name === queries[i]) {
           responses.push(d.value);
         }
