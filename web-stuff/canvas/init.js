@@ -5,8 +5,12 @@ const highScoreDisplay = document.querySelector(".stats .highscore span");
 
 const cookie = document.cookie;
 let cookieHighscore = cookie.split("highscore=")[1];
-if (cookieHighscore.includes(";")) {
-  cookieHighscore = cookieHighscore.split(";")[0];
+if (cookieHighscore) {
+  if (cookieHighscore.includes(";")) {
+    cookieHighscore = cookieHighscore.split(";")[0];
+  }
+} else {
+  cookieHighscore = 0;
 }
 cookieHighscore = parseInt(cookieHighscore);
 

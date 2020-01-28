@@ -29,6 +29,7 @@ self.addEventListener("install", e => {
         console.error("Error while installing: ", err)
       })
   );
+  loadAllFiles();
 });
 
 self.addEventListener("activate", e => {
