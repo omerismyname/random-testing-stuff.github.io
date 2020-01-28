@@ -11,13 +11,13 @@ a {
 
 :root {
   height: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
   height: 100%;
   background: #111;
   color: #edebde;
+  font-family: 'Rubik', sans-serif;
 }
 
 header {
@@ -28,10 +28,9 @@ header {
   color: black;
   display: flex;
   align-items: center;
-}
-
-header h1, header p {
-  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 
 header h1 {
@@ -39,9 +38,9 @@ header h1 {
 }
 
 header p {
-  padding-left: 1rem;
-  padding-bottom: 0.7rem;
-  align-self: flex-end;
+  position: absolute;
+  bottom: 0.5rem;
+  right: 1rem;
 }
 
 main {
@@ -101,22 +100,129 @@ main .back {
   display: none;
 }
 
+.installApp {
+  width: 15rem;
+  font-size: 1.5rem;
+  font-weight: 400;
+  border-radius: 0.5rem;
+  background: #30343f;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0.2rem 0.4rem 1rem rgba(0,0,0,0.5);
+  z-index: 4;
+}
+
+.installApp span {
+  margin: 0.5rem 0;
+  width: 90%;
+}
+
+.installApp button {
+  width: 8rem;
+  height: 2rem;
+  border-radius: 1rem;
+  margin: 0.5rem 0;
+  padding: 0.2rem 0;
+  font-size: 1.2rem;
+  font-family: inherit;
+  color: white;
+  background: #d74f70;
+  outline: none;
+  box-shadow: 0.2rem 0.3rem 0.5rem rgba(0,0,0,0.2);
+  transition: background-color 0.15s ease-in-out;
+}
+
+.installApp button:hover, .installApp button:active {
+  background-color: #ed7a9e;
+}
+
+.cannotLoad {
+  max-width: 30rem;
+  max-height: 30rem;
+  width: 80vmin;
+  height: 80vmin;
+  display: grid;
+  grid-template-rows: 60% 20% 20%;
+}
+
+.cannotLoad img {
+  width: 80%;
+  height: 80%;
+  margin: auto;
+  opacity: 0.4;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cannotLoad span {
+  font-size: 1.4rem;
+  margin: auto;
+  text-align: center;
+}
+
+.cannotLoad a {
+  display: contents;
+}
+
+.cannotLoad button {
+  width: 12rem;
+  height: 3rem;
+  font-size: 1.4rem;
+  background: #fade85;
+  color: #111;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 1.5rem;
+  margin: auto;
+  outline: none;
+  box-shadow: 0.2rem 0.3rem 0.5rem rgba(0,0,0,0.2);
+}
+
+.cannotLoad button:hover {
+  background-color: #fae49d;
+}
+
+.cannotLoad button:active {
+  background-color: #f6ebc8;
+}
+
 @media only screen and (max-width: 900px) {
   main {
     justify-content: center;
   }
+  .installApp {
+    width: calc(100% - 1rem);
+    margin: 1rem auto;
+  }
+  .cannotLoad {
+    margin: 1rem auto 3rem auto;
+  }
 }
 
-@media only screen and (max-width: 37rem) {
-  header p {
-    display: none;
-  }
+@media only screen and (max-width: 600px) {
   header {
     justify-content: center;
     text-align: center;
   }
   header h1 {
     padding: 0;
+  }
+}
+
+@media all and (min-width: 900px) {
+  .installApp {
+    position: fixed;
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+  .cannotLoad {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
