@@ -1,4 +1,4 @@
-const cacheName = "dynamic-cache-v1";
+const cacheName = "dynamic-cache-v2";
 const precacheResources = [
   "index.html",
   "main.css",
