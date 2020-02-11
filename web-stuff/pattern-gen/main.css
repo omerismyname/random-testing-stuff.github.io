@@ -1,0 +1,109 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  height: 100vh;
+  font-family: "Raleway", sans-serif;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  color: white;
+  background: #1d1d25;
+  -webkit-user-select: none;
+  -webkit-touch-callout:none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+main {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+section {
+  flex: 1;
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+}
+
+section .label {
+  padding-bottom: 1rem;
+}
+
+.game-display {
+  height: 100vmin;
+  width: 100vmin;
+  background: black;
+}
+
+.slider {
+  width: 80%;
+  height: 3px;
+  background: slategrey;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  touch-action: none;
+  --hue: 40;
+}
+
+.slider .bar {
+  height: 3px;
+  width: 10%;
+  background: hsl(var(--hue), 100%, 50%);
+  flex: none;
+}
+
+.slider .handle {
+  height: 1.5rem;
+  width: 1.5rem;
+  background: hsl(var(--hue), 79%, 66%);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  flex: none;
+  transition: width 0.1s ease-in-out, height 0.1s ease-in-out;
+}
+
+.slider .handle:hover,
+.slider .handle:active {
+  width: 1.8rem;
+  height: 1.8rem;
+  background: hsl(calc(var(--hue) + 20), 100%, 72%);
+  transform: translateX(-50%);
+}
+
+.color .slider {
+  background: linear-gradient(to right, hsl(0, 100%, 66%), hsl(120, 100%, 66%), hsl(240, 100%, 66%), hsl(360, 100%, 66%));
+  --hue: 0;
+}
+.color .bar {
+  background: none;
+  width: 0;
+}
+.color .handle:hover,
+.color .handle:active {
+  background: hsl(var(--hue), 79%, 72%);
+}
+.count .bar {
+  transition: width 0.1s ease-in-out;
+}
+
+.count .count-display {
+  padding-top: 1rem;
+  font-size: 2rem;
+}
