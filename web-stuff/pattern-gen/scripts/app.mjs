@@ -30,12 +30,12 @@ const game = {
 function init() {
   loadGame(game);
   const colorSlider = document.querySelector(".color .slider");
+  const colorHandle = colorSlider.querySelector(".handle");
   const countSlider = document.querySelector(".count .slider");
-  const handle = colorSlider.querySelector(".handle");
   const countDisplay = document.querySelector(".count .count-display");
 
   createSlider(colorSlider, true, 0, 360, value => {
-    handle.style.setProperty("--hue", value);
+    colorHandle.style.setProperty("--hue", value);
     game.color = "hsl(" + value + ",60%,80%)";
     update();
   });
@@ -43,6 +43,7 @@ function init() {
   createSlider(countSlider, false, 1, 8, value => {
     if (!value) return;
     game.count = value;
+    countSlider.style.setProperty("--hue", 120 - ((120 / 8) * value));
     countDisplay.innerHTML = value;
     game.lineWidth = 1 - (Math.floor(Math.log10((game.count * 1.2)) * 10) / 10);
     game.shapes = [];

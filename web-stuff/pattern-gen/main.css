@@ -59,7 +59,7 @@ section .label {
   justify-content: flex-start;
   align-items: center;
   touch-action: none;
-  --hue: 40;
+  --hue: 90;
 }
 
 .slider .bar {
