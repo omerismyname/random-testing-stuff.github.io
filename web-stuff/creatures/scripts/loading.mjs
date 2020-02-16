@@ -34,10 +34,9 @@ export function load(app) {
         Math.abs(yDiff) < range
       ) {
         const distance = Math.hypot(xDiff, yDiff);
-        const radius = range * Math.sqrt(2);
 
-        if (distance < radius) {
-          const strength = (1 - (distance / radius));
+        if (distance < range) {
+          const strength = (1 - (distance / range));
           const adjustedStrength = strength * strength * 2;
           
           const dx = Math.sign(xDiff) * adjustedStrength;
