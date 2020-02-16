@@ -6,7 +6,7 @@ export function load(app) {
   app.display.height = app.display.clientHeight;
 
   const size = Math.max(app.display.width, app.display.height);
-  app.creatureLimit = 200 / (size / 2000);
+  app.creatureLimit = size / 10;
 
   loadTypes(app);
   loadCreatures(app);
