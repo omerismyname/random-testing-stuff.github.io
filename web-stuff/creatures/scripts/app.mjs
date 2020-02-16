@@ -34,7 +34,6 @@ function appLoop() {
 
   for (const c of app.creatures) c.draw();
 
-  console.log("running");
   app.frame++;
   if (app.running) requestAnimationFrame(appLoop);
 }
@@ -44,15 +43,18 @@ function processCreatures() {
     app.creatures.push(new Dust());
   }
 
-  for (const c of app.creatures) c.getRect();
-  for (const c of app.creatures) c.update();
+  for (const c of app.creatures) {
+    c.update();
+    if (c.onupdate) c.onupdate();
+  }
 }
 
 window.onload = init;
 
-document.body.oncontextmenu = () => app.running = !app.running;
-
 window.onresize = () => {
   app.display.width = app.display.clientWidth;
   app.display.height = app.display.clientHeight;
+
+  const size = Math.max(app.display.width, app.display.height);
+  app.creatureLimit = 100 * (size / 2000);
 }

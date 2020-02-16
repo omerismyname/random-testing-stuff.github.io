@@ -8,7 +8,7 @@ export class Circle {
     this.x = x;
     this.y = y;
     this.r = r;
-    this.fillStyle = fillColor;
+    this.fillColor = fillColor;
 
     this.getRect = () => {
       this.top = this.y - r;
@@ -20,8 +20,8 @@ export class Circle {
     this.draw = () => {
       app.ctx.beginPath();
       app.ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
-      if (this.fillStyle) {
-        app.ctx.fillStyle = this.fillStyle;
+      if (this.fillColor) {
+        app.ctx.fillStyle = this.fillColor;
         app.ctx.fill();
       }
     };
@@ -62,8 +62,13 @@ export class Colour {
   constructor(
     h = Math.random() * 360,
     s = Math.random() * 100,
-    l = Math.random() * 100
-    ) {
-    this.hslString = "hsl("  + h +", " + s +"%, " + l +"%)";
+    l = Math.random() * 100,
+    a
+  ) {
+    if (a) {
+      this.toString = "hsla("  + h +", " + s +"%, " + l +"%, " + a + ")";
+    } else {
+      this.toString = "hsl("  + h +", " + s +"%, " + l +"%)";
+    }
   }
 }
