@@ -6,7 +6,7 @@ export function loadCreatures(a) {
 }
 
 export class Dust extends MovingCircle {
-  constructor(X = 0, Y = 0, dX = 0, dY = 0) {
+  constructor(X = 0, Y = 0, dX = 0, dY = 0, R) {
     const edge = Math.floor(Math.random() * 4);
     const angle = (Math.random() * Math.PI) + (edge * 0.5 * Math.PI);
     const velocity = Math.random() * 2;
@@ -18,7 +18,7 @@ export class Dust extends MovingCircle {
 
     const fillColor = new Colour(undefined, 80, 80).toString;
 
-    const size = Math.floor(Math.sqrt(Math.random() * 3 + 1.5));
+    const size = R || Math.floor(Math.sqrt(Math.random() * 3 + 1.5));
 
     super(x, y, size, fillColor, dx, dy, false);
 
