@@ -1,18 +1,26 @@
 * {
-  margin: 0px;
-  padding: 0px;
-  border: none;
+  margin: 0;
+  padding: 0;
 }
 
-:root {
-  height: 100%;
+a, a:visited {display: contents; color: inherit; text-decoration: none;}
+button, input {color: inherit; font-family: inherit; font-size: inherit; font-weight: inherit; border: none; outline: none;}
+button {cursor: pointer; display: block; box-sizing: content-box;}
+button > img {width: 100%; height: 100%; pointer-events: none;}
+
+html {
+  min-height: 100%;
   font-size: calc(16px + (24 - 16) * (100vw - 400px) / (800 - 400)); /* Optional for text scaling */
+}
+
+body {
+  min-height: 100%;
 }
 
 ::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
   height: 5px;
   width: 5px;
-  border-radius: 5px;
+  border-radius: 2.5px;
 }
 
 ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
@@ -28,6 +36,6 @@
 }
 
 ::selection {
-  background: #302b2b;
+  background: #333;
   color: white;
 }

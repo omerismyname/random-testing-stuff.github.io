@@ -3,27 +3,27 @@
   "name": "Testing",
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "/favicons/favicon.png",
       "type": "image/png",
       "sizes": "64x64"
     },
     {
-      "src": "/icon-72.png",
+      "src": "/favicons/icon-72.png",
       "type": "image/png",
       "sizes": "72x72"
     },
     {
-      "src": "/icon-144.png",
+      "src": "/favicons/icon-144.png",
       "type": "image/png",
       "sizes": "144x144"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/favicons/icon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/favicons/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
