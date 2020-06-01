@@ -1,7 +1,7 @@
 const container = document.querySelector("main");
 
 const url = new URL(window.location.href);
-const dir = sessionStorage.getItem("dir") || new URLSearchParams(url.search).get("dir") || "";
+const dir = sessionStorage.getItem("dir") || new URLSearchParams(url.search).get("dir") || "web-stuff";
 
 async function app() {
   let online = navigator.onLine;
@@ -25,7 +25,7 @@ async function app() {
       .then(response => response.json())
       .then(data => parseData(data))
       .then(data => {
-        if (dir != "") {addBackButton();}
+        if (dir !== "web-stuff") {addBackButton();}
     
         for (const d of data) {
           const link = createElement("a");
@@ -67,12 +67,11 @@ async function app() {
   }
 }
 
-
 function parseData(data) {
   const parsedDataArr = [];
-  const dirLength = (dir === "") ? 0 : dir.split("/").length;
+  const dirLength = dir.split("/").length;
   for (const d of data) {
-    if (d.path.indexOf(dir) === 0 && d.path.split("/").length === dirLength + 1) {
+    if (d.path.startsWith(dir) && d.path.split("/").length === dirLength + 1) {
       parsedDataArr.push(d);
     }
   }
@@ -141,6 +140,7 @@ function loadOfflinePage() {
 }
 
 async function queryWorker(...queries) {
+  if (!navigator.serviceWorker) return;
   return new Promise(res => {
     navigator.serviceWorker.onmessage = e => {
       const responses = [];
