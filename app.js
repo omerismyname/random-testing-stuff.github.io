@@ -140,7 +140,6 @@ function loadOfflinePage() {
 }
 
 async function queryWorker(...queries) {
-  if (!navigator.serviceWorker) return;
   return new Promise(res => {
     navigator.serviceWorker.onmessage = e => {
       const responses = [];
