@@ -7,6 +7,8 @@ export function load(app) {
   const size = Math.max(app.display.width, app.display.height);
   app.particleLimit = size / 10;
 
+  app.calculate = cwrap("calculate", "number", ["string", "array", "number"]);
+
   app.display.addEventListener("pointerdown", e => {
     if (app.mode === "creatures" && e.pointerType === "mouse") {
       const newParticleCount = Math.floor(Math.random() * 4) + 3;

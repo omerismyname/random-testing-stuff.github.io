@@ -1,5 +1,5 @@
 import { load } from "./loading.js";
-import { generateParticle, updateParticle, generateInitialParticles } from "./particles.js";
+import { generateParticle, updateParticles, generateInitialParticles } from "./particles.js";
 
 const canvas = document.querySelector("canvas");
 
@@ -10,7 +10,8 @@ const app = {
   particles: [],
   particleLimit: 30,
   frame: 0,
-  mode: "creatures"
+  mode: "creatures",
+  calculate: null
 }
 window.app = app;
 
@@ -23,7 +24,7 @@ function init() {
 function appLoop() {
   app.ctx.clearRect(0, 0, app.display.width, app.display.height);
   addMoreParticles();
-
+  
   const tempParticles = [];
   for (let i = 0; i < app.particles.length; i+=6) {
     const thingy = app.particles.slice(i, i+6);
@@ -33,11 +34,16 @@ function appLoop() {
       app.particles[i + 1] >= 0 &&
       app.particles[i + 1] <= app.display.height
     ) {
-      tempParticles.push(...updateParticle(app.mode, ...thingy))
-      drawCircle(...thingy)
+        tempParticles.push(...thingy);
     }
   }
-  app.particles = tempParticles;
+
+  app.particles = updateParticles(app, tempParticles);
+  
+  for (let i = 0; i < app.particles.length; i+=6) {
+    const thingy = app.particles.slice(i, i+6);
+    drawCircle(...thingy);
+  }
 
   app.frame++;
   if (app.running) requestAnimationFrame(appLoop);

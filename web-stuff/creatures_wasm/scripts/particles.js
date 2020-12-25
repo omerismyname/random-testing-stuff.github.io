@@ -42,16 +42,24 @@ export function generateParticle(mode, MAX_X, MAX_Y, X, Y) {
   ];
 }
 
-export function updateParticle(mode, x, y, dx, dy, r, hue) {
-  let newDX, newDY;
-  if (mode === "creatures") {
-    newDX = (((Math.random() - 0.5) / 2) + Math.sign(dx) * Math.min(Math.abs(dx), 2));
-    newDY = (((Math.random() - 0.5) / 2) + Math.sign(dy) * Math.min(Math.abs(dy), 2));
-  } else if (mode === "snow") {
-    newDX = Math.sign(dx) * Math.min(Math.abs(dx - 0.02), 0.2) + (Math.random() * 0.05 - 0.025);
-    newDY = dy;
-  }
-  return [x + newDX, y + newDY, newDX, newDY, r, hue];
+// export function updateParticle(mode, x, y, dx, dy, r, hue) {
+//   let newDX, newDY;
+//   if (mode === "creatures") {
+//     newDX = (((Math.random() - 0.5) / 2) + Math.sign(dx) * Math.min(Math.abs(dx), 2));
+//     newDY = (((Math.random() - 0.5) / 2) + Math.sign(dy) * Math.min(Math.abs(dy), 2));
+//   } else if (mode === "snow") {
+//     newDX = Math.sign(dx) * Math.min(Math.abs(dx - 0.02), 0.2) + (Math.random() * 0.05 - 0.025);
+//     newDY = dy;
+//   }
+//   return [x + newDX, y + newDY, newDX, newDY, r, hue];
+// }
+
+export function updateParticles(app, particles) {
+  const farr = new Float32Array(particles);
+  const uarr = new Uint8Array(farr.buffer);
+  const ptr = app.calculate(app.mode, uarr, uarr.length);
+  const uarr2 = new Uint8Array(HEAPU8.subarray(ptr, ptr + uarr.byteLength));
+  return Array.from(new Float32Array(uarr2.buffer));
 }
 
 export function generateInitialParticles(app) {
