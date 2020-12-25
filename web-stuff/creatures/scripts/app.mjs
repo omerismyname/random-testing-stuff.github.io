@@ -19,8 +19,8 @@ function init() {
     app.creatures.push(new Dust(
       Math.floor(Math.random() * app.display.width),
       Math.floor(Math.random() * app.display.height),
-      ((Math.random() * 40) / 10) - 2,
-      ((Math.random() * 40) / 10) - 2
+      Math.random() * 4 - 2,
+      Math.random() * 4 - 2
     ));
   }
 
