@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <algorithm>
+#include <string.h>
 
 using namespace std;
 
@@ -30,6 +31,28 @@ int fillSquare(uint8_t* ptr, int width, int isBlack) {
   } else {
     copy(arr2, arr2 + 2, ptr);
     copy(arr2 + 2, arr2 + 4, ptr + width);
+  }
+  return 1;
+}
+
+int removeClashingTiles(uint8_t* buf, int A) {
+  for (int y = 0; y < 2*A; y++) {
+    for (int x = 0; x < 2*A; x++) {
+      int direction = buf[2*A*y + x];
+      if (direction > 0 && direction < 5) {
+        int secondaryX[4] = {-1, 0, 1, 0}; // == targetY[]
+        int secondaryY[4] = {0, 1, 0, -1}; // == targetX[]
+        int d = direction - 1;
+        int t2x = x+secondaryX[d]+secondaryY[d];
+        int t2y = y+secondaryX[d]+secondaryY[d];
+        int target2 = buf[2*A*(t2y) + t2x];
+        if (target2 > 0 && target2 < 5 && abs(target2-direction) == 2) {
+          printf("removed clashing tiles at %d, %d - %d, %d (%d, %d)\n", x, y, t2x, t2y, direction, target2);
+          memset(buf + (2*A*y + x), 0, 2);
+          memset(buf + (2*A*y + x) + 2*A, 0, 2);
+        }
+      }
+    }
   }
   return 1;
 }
@@ -83,11 +106,8 @@ int moveTile(uint8_t* buf, int x, int y, int A, int direction) {
       moveTile(buf, x, y, A, direction);
     } else if (target2 > 0 && target2 < 5) {
       printf("trying to move: %d, %d (%d) - 2\n", t2x, t2y, target2);
-      if (abs(target2-direction) == 2) fillSquare((uint8_t*)(buf + (2*A*y + x)), 2*A, (2*A*y + x) % 2);
-      else {
-        moveTile(buf, t2x, t2y, A, target2);
-        moveTile(buf, x, y, A, direction);
-      }
+      moveTile(buf, t2x, t2y, A, target2);
+      moveTile(buf, x, y, A, direction);
     }  
     else if (target1 == 255) {
       printf("targeting: %d, %d\n", t1x, t2x);
@@ -95,11 +115,8 @@ int moveTile(uint8_t* buf, int x, int y, int A, int direction) {
         int possibleTarget = buf[2*A*(y+possibleLocations[i+1]) + x+possibleLocations[i]];
         printf("trying: %d, %d\n", x+possibleLocations[i], y+possibleLocations[i+1]);
         if (possibleTarget > 0 && possibleTarget < 5) {
-          if (abs(possibleTarget-direction) == 2) fillSquare((uint8_t*)(buf + (2*A*y + x)), 2*A, (2*A*y + x) % 2);
-          else {
-            moveTile(buf, x+possibleLocations[i], y+possibleLocations[i+1], A, possibleTarget);
-            moveTile(buf, x, y, A, direction);
-          }
+          moveTile(buf, x+possibleLocations[i], y+possibleLocations[i+1], A, possibleTarget);
+          moveTile(buf, x, y, A, direction);
           break;
         }
       }
@@ -125,7 +142,6 @@ int processMovement(uint8_t* buf, int A, int currentA) {
       int bx = (A-currentA)+x;
       int by = (A-currentA)+y;
       int d = buf[2*A*by + bx];
-      //printf("bbb %d, %d: %d\n", bx, by, d);
       if (d > 0 && d < 5) {
         moveTile(buf, bx, by, A, d);
       }
@@ -148,6 +164,7 @@ uint8_t generateCircle(uint8_t buf[], uint8_t A, uint8_t seed = 1) {
   fillSquare((uint8_t*)(buf + 2*A*(A-1) + (A-1)), 2*A, 0);
   if (A > 1) {
     for (int currentA = 1; currentA < A; currentA++) {
+      removeClashingTiles(buf, A);
       processMovement(buf, A, currentA);
       fillNewSquares(buf, A, currentA);
     }
