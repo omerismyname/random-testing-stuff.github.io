@@ -61,36 +61,45 @@ int moveTile(uint8_t* buf, int x, int y, int A, int direction) {
   int secondaryX[4] = {-1, 0, 1, 0}; // == targetY[]
   int secondaryY[4] = {0, 1, 0, -1}; // == targetX[]
   int d = direction - 1;
-  int target1 = buf[2*A*(y+secondaryX[d]) + x+secondaryY[d]];
-  int target2 = buf[2*A*(y+secondaryX[d]+secondaryY[d]) + x+secondaryX[d]+secondaryY[d]];
+  int t1x = x+secondaryY[d];
+  int t1y = y+secondaryX[d];
+  int t2x = x+secondaryX[d]+secondaryY[d];
+  int t2y = y+secondaryX[d]+secondaryY[d];
+  int target1 = buf[2*A*(t1y) + t1x];
+  int target2 = buf[2*A*(t2y) + t2x];
   int pattern[4] = {-1, -1, 1, 1};
   int possibleLocations[6] = {secondaryY[d] * 2, secondaryX[d] * 2, secondaryX[d]+secondaryY[d], pattern[d], -pattern[d], secondaryX[d]+secondaryY[d]};
-  printf("looking at: %d, %d to %d, %d (%d)\n", x, y, x+secondaryY[d], y+secondaryX[d], (d+1));
+  printf("looking at: %d, %d to %d, %d (%d)\n", x, y, t1x, t1y, (d+1));
   if (target1 == 0 && target2 == 0) {
-    printf("moving: %d, %d to %d, %d (%d)\n", x, y, x+secondaryY[d], y+secondaryX[d], (d+1));
-    buf[2*A*(y+secondaryX[d]) + x+secondaryY[d]] = d + 5;
-    buf[2*A*(y+secondaryX[d]+secondaryY[d]) + x+secondaryX[d]+secondaryY[d]] = 255;
+    printf("moving: %d, %d to %d, %d (%d)\n", x, y, t1x, t1x, (d+1));
+    buf[2*A*t1y + t1x] = d + 5;
+    buf[2*A*t2y + t2x] = 255;
     buf[2*A*y + x] = buf[2*A*(y+secondaryY[d]) + x+secondaryX[d]] = 0;
   }
   else {
     if (target1 > 0 && target1 < 5) {
-      printf("trying to move: %d, %d (%d)\n", x+secondaryY[d], y+secondaryX[d], target1);
-      moveTile(buf, x+secondaryY[d], y+secondaryX[d], A, target1);
+      printf("trying to move: %d, %d (%d) - 1\n", t1x, t1y, target1);
+      moveTile(buf, t1x, t1y, A, target1);
       moveTile(buf, x, y, A, direction);
     } else if (target2 > 0 && target2 < 5) {
-      printf("trying to move: %d, %d (%d)\n", x+secondaryX[d]+secondaryY[d], y+secondaryY[d]+secondaryX[d], target2);
-      moveTile(buf, x+secondaryX[d]+secondaryY[d], y+secondaryY[d]+secondaryX[d], A, target2);
-      moveTile(buf, x, y, A, direction);
+      printf("trying to move: %d, %d (%d) - 2\n", t2x, t2y, target2);
+      if (abs(target2-direction) == 2) fillSquare((uint8_t*)(buf + (2*A*y + x)), 2*A, (2*A*y + x) % 2);
+      else {
+        moveTile(buf, t2x, t2y, A, target2);
+        moveTile(buf, x, y, A, direction);
+      }
     }  
     else if (target1 == 255) {
-      printf("targeting: %d, %d\n", x+secondaryY[d], y+secondaryX[d]);
+      printf("targeting: %d, %d\n", t1x, t2x);
       for (int i = 0; i < 6; i+=2) {
         int possibleTarget = buf[2*A*(y+possibleLocations[i+1]) + x+possibleLocations[i]];
         printf("trying: %d, %d\n", x+possibleLocations[i], y+possibleLocations[i+1]);
         if (possibleTarget > 0 && possibleTarget < 5) {
-          if (abs(target1-direction) == 2) fillSquare((uint8_t*)(buf + (2*A*y + x)), 2*A, (2*A*y + x) % 2);
-          else moveTile(buf, x+possibleLocations[i], y+possibleLocations[i+1], A, possibleTarget);
-          moveTile(buf, x, y, A, direction);
+          if (abs(possibleTarget-direction) == 2) fillSquare((uint8_t*)(buf + (2*A*y + x)), 2*A, (2*A*y + x) % 2);
+          else {
+            moveTile(buf, x+possibleLocations[i], y+possibleLocations[i+1], A, possibleTarget);
+            moveTile(buf, x, y, A, direction);
+          }
           break;
         }
       }
@@ -135,11 +144,10 @@ int processMovement(uint8_t* buf, int A, int currentA) {
 }
 
 uint8_t generateCircle(uint8_t buf[], uint8_t A, uint8_t seed = 1) {
-  srand(time(NULL));
+  srand(seed);
   fillSquare((uint8_t*)(buf + 2*A*(A-1) + (A-1)), 2*A, 0);
   if (A > 1) {
     for (int currentA = 1; currentA < A; currentA++) {
-      
       processMovement(buf, A, currentA);
       fillNewSquares(buf, A, currentA);
     }

@@ -6,8 +6,10 @@ app.renderer.resize(window.innerWidth, window.innerHeight);
 const graphics = new PIXI.Graphics();
 
 let MAX_SIZE = Math.floor(Math.min(window.innerWidth, window.innerHeight) / 2) * 2;
-const A = 10;
-const seed = 1;
+const A = 3;
+const seed = 3976965061;
+//const seed = 3976965861;
+//const seed = Math.floor(Math.random() * Math.pow(2, 32));
 const gap = 0;
 
 setTimeout(onLoad, 200);
