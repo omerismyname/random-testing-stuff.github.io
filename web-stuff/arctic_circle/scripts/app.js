@@ -15,12 +15,10 @@ setTimeout(onLoad, 200);
 
 function onLoad() {
   let gridArr = new Uint8Array(A*A*4);
-  console.log(gridArr);
   let buf = Module._malloc(gridArr.length*gridArr.BYTES_PER_ELEMENT);
   Module.HEAPU8.set(gridArr, buf);
   Module._generateCircle(buf, A, seed);
   let circleArr = new Uint8Array(HEAPU8.subarray(buf, buf+gridArr.length*gridArr.BYTES_PER_ELEMENT));
-  console.log(circleArr);
   Module._free(buf);
 
   drawCircle(circleArr);
@@ -38,9 +36,7 @@ function drawCircle(circleArr) {
   let size = MAX_SIZE / (A*2);
   for (let y = 0; y < A*2; y++) {
     for (let x = 0; x < A*2; x++) {
-      const colour = coloursDict[circleArr[2*A*y + x]];
-      console.log(colour.toString(16));
-      graphics.beginFill(colour);
+      graphics.beginFill((circleArr[2*A*y + x]) ? 0xffffff : 0);
       graphics.drawRect(x * (size+gap), y * (size+gap), size, size);
       graphics.endFill();
     }
