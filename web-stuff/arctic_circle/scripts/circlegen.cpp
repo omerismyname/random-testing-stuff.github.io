@@ -160,7 +160,7 @@ int calculateTileToSearchFor(int i, int d) {
 //   return 1;
 // }
 
-int moveTile(uint8_t* buf, int x, int y, int A, int direction, int fillOldPrimary = 1, int fillOldSecondary = 1) {
+int moveTile(uint8_t* buf, int x, int y, int A, int direction, int fillOldPrimary, int fillOldSecondary) {
   int sX[4] = {-1, 0, 1, 0}; // secondaryX == targetY[]
   int sY[4] = {0, 1, 0, -1}; // secondaryY == targetX[]
   int d = direction - 1;
@@ -168,29 +168,39 @@ int moveTile(uint8_t* buf, int x, int y, int A, int direction, int fillOldPrimar
   int t1y = y+sX[d];
   int t2x = x+sX[d]+sY[d];
   int t2y = y+sX[d]+sY[d];
-  int target1 = buf[2*A*(t1y) + t1x];
-  int target2 = buf[2*A*(t2y) + t2x];
+  int target1 = buf[2*A*t1y + t1x];
+  int target2 = buf[2*A*t2y + t2x];
   int pattern[4] = {-1, -1, 1, 1};
   int possibleLocations[6] = {sY[d] * 2, sX[d] * 2, sX[d]+sY[d], pattern[d], -pattern[d], sX[d]+sY[d]};
   printf("moving: %d, %d to %d, %d (%d)\n", x, y, t1x, t1y, direction);
   buf[2*A*t1y + t1x] = direction + 4;
   buf[2*A*t2y + t2x] = 255;
   if (fillOldPrimary == 1) printf("zeroing %d, %d\n", x, y);
-  if (fillOldSecondary == 1) printf("zeroing %d, %d\n", x, y);
+  if (fillOldSecondary == 1) printf("zeroing %d, %d\n", x+sX[d], y+sY[d]);
   if (fillOldPrimary == 1) buf[2*A*y + x] = 0;
   if (fillOldSecondary == 1) buf[2*A*(y+sY[d]) + x+sX[d]] = 0;
   int othersMoved = 0;
   if (target1 > 0 && target1 < 5) {
     printf("trying to move: %d, %d (%d) - p\n", t1x, t1y, target1);
-    moveTile(buf, t1x, t1y, A, target1, 1, 0);
+    if (moveTile(buf, t1x, t1y, A, target1, 1, 0) == 0) return 0;
     othersMoved++;
   } 
   if (target2 > 0 && target2 < 5) {
     printf("trying to move: %d, %d (%d) - s\n", t2x, t2y, target2);
-    moveTile(buf, t2x, t2y, A, target2, 0, 1);
+    if (moveTile(buf, t2x, t2y, A, target2, 0, 1) == 0) return 0;
     othersMoved++;
   }
   if (othersMoved == 2) return 1;
+  if (othersMoved > 0) {
+    if (buf[2*A*t1y + t1x] != target1 && buf[2*A*t1y + t1x] == 0) {
+      buf[2*A*t1y + t1x] = direction + 4;
+      return 1;
+    }
+    if (buf[2*A*t2y + t2x] != target2 && buf[2*A*t2y + t2x] == 0) {
+      buf[2*A*t2y + t2x] = 255;
+      return 1;
+    }
+  }
   if (target1 == 255 || target2 == 255) {
     int s = (target2 == 255); // use secondary offset
     for (int si = (target1 != 255); si < ((target1 == 255)+s); si++) {
@@ -200,12 +210,13 @@ int moveTile(uint8_t* buf, int x, int y, int A, int direction, int fillOldPrimar
         printf("trying: %d, %d\n", x+si*sX[d]+possibleLocations[i], y+si*sY[d]+possibleLocations[i+1]);
         printf("value is %d, looking for %d\n", possibleTarget, calculateTileToSearchFor(i/2, direction));
         if (possibleTarget == calculateTileToSearchFor(i/2, direction)) {
-          moveTile(buf, x+si*sX[d]+possibleLocations[i], y+si*sY[d]+possibleLocations[i+1], A, possibleTarget, ((1-si)+(target2 == 255))%2, ((1-si)+(target1 == 255))%2);
+          if (moveTile(buf, x+si*sX[d]+possibleLocations[i], y+si*sY[d]+possibleLocations[i+1], A, possibleTarget, ((1-si)+(target2 == 255))%2, ((1-si)+(target1 == 255))%2) == 0) return 0;
           return 1;
         }
       }
     }
-    printf("ERROR: PLACE TO MOVE NOT FOUND\n");
+    printf("%d, %d and %d, %d\n", buf[2*A*(t1y) + t1x], target1, buf[2*A*(t2y) + t2x], target2);
+    printf("ERROR: PLACE TO MOVE NOT FOUNDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD\n");
     return 0;
   }
   return 1;
@@ -218,8 +229,16 @@ int processMovement(uint8_t* buf, int A, int currentA) {
       int by = (A-currentA)+y;
       int d = buf[2*A*by + bx];
       if (d > 0 && d < 5) {
-        if (moveTile(buf, bx, by, A, d) == 0) {
+        if (moveTile(buf, bx, by, A, d, 1, 1) == 0) {
           printf("ERROR ERROR ERROR\n");
+          for (int y = 0; y < A*2; y++) {
+            for (int x = 0; x < A*2; x++) {
+              int d = buf[2*A*y + x];
+              if (d > 0 && d < 9) {
+                buf[2*A*y + x] = ((d-1) % 4) + 1;
+              }
+            }
+          }
           return 0;
         }
       }
@@ -230,7 +249,6 @@ int processMovement(uint8_t* buf, int A, int currentA) {
       int d = buf[2*A*y + x];
       if (d > 0 && d < 9) {
         buf[2*A*y + x] = ((d-1) % 4) + 1;
-        //printf("%d, %d: %d %d\n", y, x, d, ((d-1) % 4) + 1);
       }
     }
   }
