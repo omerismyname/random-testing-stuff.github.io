@@ -14,13 +14,22 @@
   <section class="controls">
     <div class="buttons">
       <form action="" onsubmit="return onFormSubmit();">
-        <input placeholder="Size of Diamond" type="text" name="A" required id="A">
-        <input placeholder="Seed" type="text" name="Seed" required id="seed">
-        <input type="checkbox" name="Verbose" id="verbose">
-        <button type="submit"></button>
+        <input class="textfield" placeholder="Size" type="text" name="A" id="A" autocomplete="off">
+        <input class="textfield" placeholder="Seed" type="text" name="seed" id="seed" autocomplete="off">
+        <div class="checkbox-wrapper">
+          <input type="checkbox" name="verbose" id="verbose"/>
+          <div class="checkbox">
+            <svg class="checkmark" viewBox="0 0 24 24">
+              <path class="checkmark-path" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+            </svg>
+          </div>
+          <label for="verbose">Debug</label>
+        </div>
+        <button type="submit">Generate</button>
       </form>
     </div>
   </section>
+  <script src="scripts/setup.js"></script>
   <script src="scripts/circlegen.js"></script>
   <script src="scripts/pixi.min.js"></script>
   <script src="scripts/app.js"></script>

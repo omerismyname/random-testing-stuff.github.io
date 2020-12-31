@@ -1,12 +1,7 @@
 const canvas = document.querySelector("canvas");
-const app = new PIXI.Application({ antialias: false, resizeTo: canvas.parentElement, view: canvas, transparent: true });
-app.renderer.resize(window.innerWidth, window.innerHeight);
+const app = new PIXI.Application({ antialias: false, resizeTo: canvas, view: canvas, transparent: true });
 
 const graphics = new PIXI.Graphics();
-
-let MAX_SIZE = Math.floor(Math.min(window.innerWidth, window.innerHeight) / 2) * 2;
-//const seed = 3976965061;
-//const seed = 3976965861;
 const gap = 0;
 
 setTimeout(onLoad, 200);
@@ -34,7 +29,6 @@ async function generateCircle(A, seed, verbose = false) {
   drawCircle(A, buf);
   let ptr = Module._malloc(buf.length*buf.BYTES_PER_ELEMENT);
   Module.HEAPU8.set(buf, ptr);
-  let circleArr;
   let currentA = 1;
   await new Promise(res => {
     if (currentA < A) requestAnimationFrame(() => iterateCircle(buf, ptr, A, currentA, seed, verbose, res));
@@ -43,8 +37,8 @@ async function generateCircle(A, seed, verbose = false) {
   console.log("Generation Complete!");
 
   window.onresize = () => {
-    app.renderer.resize(window.innerWidth, window.innerHeight);
-    MAX_SIZE = Math.floor(Math.min(window.innerWidth, window.innerHeight) / 2) * 2;
+    console.log("EEEEEEE");
+    circleArr = new Uint8Array(HEAPU8.subarray(ptr, ptr+buf.length*buf.BYTES_PER_ELEMENT));
     drawCircle(A, circleArr);
   }
 }
@@ -65,7 +59,7 @@ const rectangles = [[-1, 0, 2, 1], [0, 0, 1, 2], [0, 0, 2, 1], [0, -1, 1, 2]]
 
 function drawCircle(A, circleArr) {
   graphics.clear();
-  let size = MAX_SIZE / (A*2);
+  let size = Math.min(canvas.clientWidth, canvas.clientHeight) / (A*2);
   for (let y = 0; y < A*2; y++) {
     for (let x = 0; x < A*2; x++) {
       const d = circleArr[2*A*y + x] - 1;
