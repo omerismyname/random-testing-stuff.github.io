@@ -6,23 +6,30 @@ app.renderer.resize(window.innerWidth, window.innerHeight);
 const graphics = new PIXI.Graphics();
 
 let MAX_SIZE = Math.floor(Math.min(window.innerWidth, window.innerHeight) / 2) * 2;
-const A = 20; // SET HIGHER AND INVESTIGATE
-const seed = 3976965061;
+const A = 3; // SET HIGHER AND INVESTIGATE
+//const seed = 3976965061;
 //const seed = 3976965861;
-//const seed = Math.floor(Math.random() * Math.pow(2, 32));
+const seed = Math.floor(Math.random() * Math.pow(2, 32));
 const gap = 0;
 
 setTimeout(onLoad, 200);
 
 function onLoad() {
-  let gridArr = new Uint8Array(A*A*4);
-  let buf = Module._malloc(gridArr.length*gridArr.BYTES_PER_ELEMENT);
-  Module.HEAPU8.set(gridArr, buf);
-  Module._generateCircle(buf, A, seed);
-  let circleArr = new Uint8Array(HEAPU8.subarray(buf, buf+gridArr.length*gridArr.BYTES_PER_ELEMENT));
-  Module._free(buf);
-  console.log(circleArr)
-  drawCircle(circleArr);
+  let buf = new Uint8Array(A*A*4);
+  let startArr = (Math.random() > 0.5) ? [255, 2, 4, 255] : [255, 1, 3, 255];
+  for (let j = 0; j < 4; j++) {
+    buf[2*A*((j>1)+A-1) + ((j%2)+A-1)] = startArr[j];
+  }
+  drawCircle(buf);
+  let ptr = Module._malloc(buf.length*buf.BYTES_PER_ELEMENT);
+  Module.HEAPU8.set(buf, ptr);
+  let circleArr;
+  for (let i = 1; i < A; i++) {
+    Module._iterateCircle(ptr, A, i, seed);
+    circleArr = new Uint8Array(HEAPU8.subarray(ptr, ptr+buf.length*buf.BYTES_PER_ELEMENT));
+    drawCircle(circleArr);
+  }
+  Module._free(ptr);
 
   app.stage.addChild(graphics);
   window.onresize = () => {
