@@ -6,43 +6,54 @@ app.renderer.resize(window.innerWidth, window.innerHeight);
 const graphics = new PIXI.Graphics();
 
 let MAX_SIZE = Math.floor(Math.min(window.innerWidth, window.innerHeight) / 2) * 2;
-const A = 6;
 //const seed = 3976965061;
 //const seed = 3976965861;
-const seed = Math.floor(Math.random() * Math.pow(2, 32));
 const gap = 0;
 
 setTimeout(onLoad, 200);
 
 function onLoad() {
+  const A = 100;
+  const seed = Math.floor(Math.random() * Math.pow(2, 32));
+  generateCircle(A, seed);
+
+  app.stage.addChild(graphics);
+}
+
+function generateCircle(A, seed) {
   let buf = new Uint8Array(A*A*4);
   let startArr = (Math.random() > 0.5) ? [255, 2, 4, 255] : [255, 1, 3, 255];
   for (let j = 0; j < 4; j++) {
     buf[2*A*((j>1)+A-1) + ((j%2)+A-1)] = startArr[j];
   }
-  drawCircle(buf);
+  drawCircle(A, buf);
   let ptr = Module._malloc(buf.length*buf.BYTES_PER_ELEMENT);
   Module.HEAPU8.set(buf, ptr);
   let circleArr;
-  for (let i = 1; i < A; i++) {
-    Module._iterateCircle(ptr, A, i, seed);
-    circleArr = new Uint8Array(HEAPU8.subarray(ptr, ptr+buf.length*buf.BYTES_PER_ELEMENT));
-    drawCircle(circleArr);
-  }
+  let currentA = 1;
+  if (currentA < A) requestAnimationFrame(() => iterateCircle(buf, ptr, A, currentA, seed));
   Module._free(ptr);
+  console.log("Generation Complete!");
 
-  app.stage.addChild(graphics);
   window.onresize = () => {
     app.renderer.resize(window.innerWidth, window.innerHeight);
     MAX_SIZE = Math.floor(Math.min(window.innerWidth, window.innerHeight) / 2) * 2;
-    drawCircle(circleArr);
+    drawCircle(A, circleArr);
   }
+}
+
+function iterateCircle(buf, ptr, A, currentA, seed) {
+  Module._iterateCircle(ptr, A, currentA, seed, false);
+  circleArr = new Uint8Array(HEAPU8.subarray(ptr, ptr+buf.length*buf.BYTES_PER_ELEMENT));
+  drawCircle(A, circleArr);
+  currentA++;
+  if (currentA < A) requestAnimationFrame(() => iterateCircle(buf, ptr, A, currentA, seed));
 }
 
 const coloursDict = [0xebcb8b, 0xbf616a, 0xb48ead, 0x81a1c1];
 const rectangles = [[-1, 0, 2, 1], [0, 0, 1, 2], [0, 0, 2, 1], [0, -1, 1, 2]]
 
-function drawCircle(circleArr) {
+function drawCircle(A, circleArr) {
   graphics.clear();
   let size = MAX_SIZE / (A*2);
   for (let y = 0; y < A*2; y++) {
