@@ -155,6 +155,7 @@ button {
   font-family: inherit;
   font-size: 1.2rem;
   transition: background-color 0.2s ease-in-out;
+  user-select: none;
 }
 
 button:hover {

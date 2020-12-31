@@ -1,4 +1,7 @@
 const canvas = document.querySelector("canvas");
+const form = document.querySelector(".buttons form");
+const textA = form.querySelector("#A");
+const textSeed = form.querySelector("#seed");
 const app = new PIXI.Application({ antialias: false, resizeTo: canvas, view: canvas, transparent: true });
 
 const graphics = new PIXI.Graphics();
@@ -7,12 +10,31 @@ const gap = 0;
 setTimeout(onLoad, 200);
 
 function onLoad() {
-  const A = 50;
   const seed = Math.floor(Math.random() * Math.pow(2, 32));
-  generateCircle(A, seed);
-
+  generateCircle(20, seed);
   app.stage.addChild(graphics);
 }
+let textA_ = textA.value;
+let textSeed_ = textSeed.value;
+textA.oninput = e => {
+  if (e.data !== null && !/^\d+$/.test(e.data)) e.srcElement.value = textA_;
+  textA_ = e.srcElement.value;
+};
+textSeed.oninput = e => {
+  if (e.data !== null && !/^\d+$/.test(e.data)) e.srcElement.value = textSeed_;
+  textSeed_ = e.srcElement.value;
+};
+
+form.onsubmit = e => {
+  e.preventDefault();
+  const data = new FormData(form);
+  const A = parseInt(data.get("A"));
+  const seed = parseInt(data.get("seed"));
+  const verbose = data.get("verbose");
+  if (isNaN(A)) return;
+  if (isNaN(seed)) return;
+  generateCircle(A, seed, (verbose === "on"));
+};
 
 function onFormSubmit() {
   generateCircle(2, 100, false);
@@ -40,7 +62,7 @@ async function generateCircle(A, seed, verbose = false) {
     console.log("EEEEEEE");
     circleArr = new Uint8Array(HEAPU8.subarray(ptr, ptr+buf.length*buf.BYTES_PER_ELEMENT));
     drawCircle(A, circleArr);
-  }
+  };
 }
 
 function iterateCircle(buf, ptr, A, currentA, seed, verbose, res) {
