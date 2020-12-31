@@ -9,5 +9,24 @@ html, body {
 }
 
 body {
-  background: #0b0b11;
+  background: #2e3440;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+section {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  flex: 1 1 150px;
+  display: grid;
+  place-items: center;
+}
+
+canvas {
+  position: relative;
 }

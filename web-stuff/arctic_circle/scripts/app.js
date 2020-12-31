@@ -1,7 +1,6 @@
-const app = new PIXI.Application({ antialias: false, resizeTo: window });
-document.body.appendChild(app.view);
+const canvas = document.querySelector("canvas");
+const app = new PIXI.Application({ antialias: false, resizeTo: canvas.parentElement, view: canvas, transparent: true });
 app.renderer.resize(window.innerWidth, window.innerHeight);
-//app.renderer.backgroundColor = 0x171a1e;
 
 const graphics = new PIXI.Graphics();
 
@@ -13,11 +12,16 @@ const gap = 0;
 setTimeout(onLoad, 200);
 
 function onLoad() {
-  const A = 20;
+  const A = 500;
   const seed = Math.floor(Math.random() * Math.pow(2, 32));
   generateCircle(A, seed);
 
   app.stage.addChild(graphics);
+}
+
+function onFormSubmit() {
+  generateCircle(2, 100, false);
+  return false;
 }
 
 async function generateCircle(A, seed, verbose = false) {

@@ -8,6 +8,19 @@
   <title>Arctic Circle Generator</title>
 </head>
 <body>
+  <section class="canvas_container">
+    <canvas></canvas>
+  </section>
+  <section class="controls">
+    <div class="buttons">
+      <form action="" onsubmit="return onFormSubmit();">
+        <input placeholder="Size of Diamond" type="text" name="A" required id="A">
+        <input placeholder="Seed" type="text" name="Seed" required id="seed">
+        <input type="checkbox" name="Verbose" id="verbose">
+        <button type="submit"></button>
+      </form>
+    </div>
+  </section>
   <script src="scripts/circlegen.js"></script>
   <script src="scripts/pixi.min.js"></script>
   <script src="scripts/app.js"></script>
