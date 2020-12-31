@@ -43,11 +43,12 @@ section {
   margin: auto;
 }
 
-canvas {
+#canvas {
   height: min(100vh, 100vw);
   width: min(100vh, 100vw);
   display: block;
   position: relative;
+  pointer-events: all;
 }
 
 .buttons {
