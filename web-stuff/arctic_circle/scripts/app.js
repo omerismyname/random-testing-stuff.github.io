@@ -12,7 +12,7 @@ const gap = 0;
 setTimeout(onLoad, 200);
 
 function onLoad() {
-  const A = 500;
+  const A = 50;
   const seed = Math.floor(Math.random() * Math.pow(2, 32));
   generateCircle(A, seed);
 
