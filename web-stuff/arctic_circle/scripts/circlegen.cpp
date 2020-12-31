@@ -8,24 +8,10 @@
 using namespace std;
 
 extern "C" {
-// int* generateDiamond(int A) {
-//   int arr[A*A*4];
-//   for (int y = 0; y < 2*A; y++) {
-//     int off = A-y-1;
-//     if (off < 0) off = abs(off + 1);
-//     for (int x = off; x < 2*A-off; x++) {
-//       arr[2*A*y + x] = 0;
-//     }
-//   }
-//   return arr;
-// }
-
 int fillSquare(uint8_t* ptr, int width, int isBlack) {
-  //printf("b: %d\n", isBlack);
   int arr1[4] = {255, 2, 4, 255};
   int arr2[4] = {255, 1, 3, 255};
   if ((uint8_t)rand() >> 7) {
-  //if (true) {
     copy(arr1, arr1 + 2, ptr);
     copy(arr1 + 2, arr1 + 4, ptr + width);
   } else {
@@ -68,7 +54,6 @@ int fillNewSquares(uint8_t* buf, int A, int currentA, bool v) {
       for (int sy = 0; sy < 2; sy++) {
         for (int sx = 0; sx < 2; sx++) {
           count += buf[2*A*(by+sy) + bx+sx];
-          //printf("%d, %d: %d\n", by+sy, bx+sx, buf[2*A*(by+sy) + bx+sx]);
         }
       }
       if (count == 0) {
@@ -184,22 +169,6 @@ int processMovement(uint8_t* buf, int A, int currentA, bool v) {
   return 1;
 }
 
-// uint8_t generateCircle(uint8_t buf[], uint8_t A, uint8_t seed = 1) {
-//   srand(seed);
-//   fillSquare((uint8_t*)(buf + 2*A*(A-1) + (A-1)), 2*A, 0);
-//   if (A > 1) {
-//     for (int currentA = 1; currentA < A; currentA++) {
-//       removeClashingTiles(buf, A);
-//       if (processMovement(buf, A, currentA) == 0) {
-//         printf("AAAAAAAAAHHHH IT'S ALL FALLING APART - %d/%d\n", currentA, A);
-//         return 1;
-//       }
-//       fillNewSquares(buf, A, currentA);
-//     }
-//   }
-//   return 1;
-// }
-
 uint8_t iterateCircle(uint8_t buf[], uint8_t A, uint8_t currentA, uint8_t seed = 1, bool v = false) {
   srand(seed);
   removeClashingTiles(buf, A, v);
@@ -213,13 +182,10 @@ uint8_t iterateCircle(uint8_t buf[], uint8_t A, uint8_t currentA, uint8_t seed =
 }
 
 int main(int argc, char** argv) {
-  // uint8_t A = atoi(argv[1]);
-  // uint8_t buf[A*A*4] = {0};
-  // generateCircle(buf, A, 5);
   printf("WASM Loaded.\n");
   return 1;
 }
 
 }
 
-//emcc scripts/circlegen.cpp -o scripts/circlegen.js -O2 -s WASM=1 -s EXPORTED_FUNCTIONS="['_main','_iterateCircle','_malloc','_free']"
+//emcc scripts/circlegen.cpp -o scripts/circlegen.js -O3 -s WASM=1 -s EXPORTED_FUNCTIONS="['_main','_iterateCircle','_malloc','_free']"

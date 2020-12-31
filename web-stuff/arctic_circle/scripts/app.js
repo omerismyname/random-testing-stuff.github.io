@@ -6,14 +6,14 @@ const app = new PIXI.Application({ antialias: false, resizeTo: canvas, view: can
 
 const graphics = new PIXI.Graphics();
 const gap = 0;
+const coloursDict = [0xebcb8b, 0xbf616a, 0xb48ead, 0x81a1c1];
+const rectangles = [[-1, 0, 2, 1], [0, 0, 1, 2], [0, 0, 2, 1], [0, -1, 1, 2]];
 
-setTimeout(onLoad, 200);
-
-function onLoad() {
-  const seed = Math.floor(Math.random() * Math.pow(2, 32));
-  generateCircle(20, seed);
+setTimeout(() => {
+  generateCircle(20, Math.floor(Math.random() * Math.pow(2, 32)));
   app.stage.addChild(graphics);
-}
+}, 250);
+
 let textA_ = textA.value;
 let textSeed_ = textSeed.value;
 textA.oninput = e => {
@@ -45,8 +45,8 @@ async function generateCircle(A, seed, verbose = false) {
   let buf = new Uint8Array(A*A*4);
   if (verbose) console.log(`Processing iteration 1/${A}`);
   let startArr = (Math.random() > 0.5) ? [255, 2, 4, 255] : [255, 1, 3, 255];
-  for (let j = 0; j < 4; j++) {
-    buf[2*A*((j>1)+A-1) + ((j%2)+A-1)] = startArr[j];
+  for (let i = 0; i < 4; i++) {
+    buf[2*A*((i>1)+A-1) + ((i%2)+A-1)] = startArr[i];
   }
   drawCircle(A, buf);
   let ptr = Module._malloc(buf.length*buf.BYTES_PER_ELEMENT);
@@ -75,9 +75,6 @@ function iterateCircle(buf, ptr, A, currentA, seed, verbose, res) {
     requestAnimationFrame(() => iterateCircle(buf, ptr, A, currentA, seed, verbose, res));
   } else res();
 }
-
-const coloursDict = [0xebcb8b, 0xbf616a, 0xb48ead, 0x81a1c1];
-const rectangles = [[-1, 0, 2, 1], [0, 0, 1, 2], [0, 0, 2, 1], [0, -1, 1, 2]]
 
 function drawCircle(A, circleArr) {
   graphics.clear();
