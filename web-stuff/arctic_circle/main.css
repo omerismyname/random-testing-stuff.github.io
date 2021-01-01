@@ -49,6 +49,7 @@ section {
   display: block;
   position: relative;
   pointer-events: all;
+  touch-action: auto;
 }
 
 .buttons {
