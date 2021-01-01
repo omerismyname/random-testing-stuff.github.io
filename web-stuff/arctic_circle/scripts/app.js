@@ -2,7 +2,7 @@ const canvas = document.querySelector("canvas");
 const form = document.querySelector(".buttons form");
 const textA = form.querySelector("#A");
 const textSeed = form.querySelector("#seed");
-const app = new PIXI.Application({ antialias: false, resizeTo: canvas, view: canvas, transparent: true });
+const app = new PIXI.Application({ antialias: true, resizeTo: canvas, view: canvas, transparent: true });
 
 const graphics = new PIXI.Graphics();
 const gap = 0;
