@@ -2,8 +2,9 @@ const canvas = document.querySelector("canvas");
 const form = document.querySelector(".buttons form");
 const textA = form.querySelector("#A");
 const textSeed = form.querySelector("#seed");
-const app = new PIXI.Application({ antialias: true, resizeTo: canvas, view: canvas, transparent: true });
-canvas.style = "";
+const app = new PIXI.Application({ antialias: true, resizeTo: canvas, view: canvas, transparent: true, autoPreventDefault: false });
+app.renderer.plugins.interaction.autoPreventDefault = false;
+app.renderer.view.style.touchAction = 'auto';
 
 const graphics = new PIXI.Graphics();
 const gap = 0;
