@@ -3,7 +3,7 @@ import { ThemeProvider, Button } from '@material-ui/core'
 import { createMuiTheme } from '@material-ui/core/styles'
 import { useRef, useState, useEffect } from 'react';
 
-const resolution = 800;
+const resolution = Math.min(512, Math.floor(window.innerWidth));
 const theme = createMuiTheme({
   palette: {
     type: "dark"
