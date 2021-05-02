@@ -13,7 +13,7 @@ const theme = createMuiTheme({
 let currentGrid = null;
 let currentGridSize = null;
 
-function App() {
+export default function App() {
   const [initialGridType, setInitialGridType] = useState("white_noise");
   const [resolution, setResolution] = useState(initialWindowWidth);
   const [grid, setGrid] = useState(generateInitialGrid("white_noise", resolution));
@@ -70,8 +70,6 @@ function App() {
     </ThemeProvider>
   );
 }
-
-export default App;
 
 function startSimulation(ms, initialGrid, setGrid, gridSize) {
   const start = document.timeline ? document.timeline.currentTime : performance.now();
