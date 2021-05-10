@@ -5,6 +5,8 @@ const gridWidth = 30;
 const gridHeight = 20;
 const gridSquareWidth = 25;
 const gridGap = 1;
+const fps = 10;
+const snakeInitialLength = 3;
 let snakeSegments = [];
 let snakeDirection = 1;
 let nextDirection = 1;
@@ -55,6 +57,7 @@ function startGameLoop(ms, ctx) {
 
 function snakeIteration(ctx) {
   snakeDirection = validateDirection(nextDirection);
+  nextDirection = snakeDirection;
   const currentDirection = directionToVector[snakeDirection];
   let snakeHeadPos = snakeSegments[snakeSegments.length-1];
   let appleEaten = false;
@@ -130,28 +133,22 @@ function spawnApple() {
 }
 
 function draw(ctx) {
-  ctx.fillStyle = "#333333"; // background
+  ctx.fillStyle = "#222222"; // background
   for (let y = 0; y < gridHeight; y++) {
     for (let x = 0; x < gridWidth; x++) {
       fillGridSquare(ctx, x, y, gridSquareWidth, gridGap);
     }
   }
-  ctx.fillStyle = "#990000"; // apples
+  ctx.fillStyle = "#981815"; // apples
   for (let i = 0; i < apples.length; i++) {
     fillGridSquare(ctx, apples[i][0], apples[i][1], gridSquareWidth, gridGap);
   }
-  ctx.fillStyle = "#999999"; // snake body
-  for (let i = 0; i < snakeSegments.length-1; i++) {
+  // fill snake with gradient from head
+  for (let i = 0; i < snakeSegments.length; i++) {
+    const brightness = Math.floor(102 + (255-102) * i / (snakeSegments.length-1));
+    ctx.fillStyle = `rgb(${brightness}, ${brightness}, ${brightness})`;
     fillGridSquare(ctx, snakeSegments[i][0], snakeSegments[i][1], gridSquareWidth, gridGap);
   }
-  ctx.fillStyle = "#ffffff"; // highlight snake head
-  fillGridSquare(
-    ctx,
-    snakeSegments[snakeSegments.length-1][0],
-    snakeSegments[snakeSegments.length-1][1],
-    gridSquareWidth,
-    gridGap
-  );
 }
 
 function fillGridSquare(ctx, gridX, gridY, gridSquareWidth, gap) {
@@ -198,12 +195,11 @@ function resetSnake(ctx) {
   if (!running) {
     const centreX = Math.floor(gridWidth / 2);
     const centreY = Math.floor(gridHeight / 2);
-    snakeSegments = [
-      [centreX+0, centreY],
-      [centreX+1, centreY],
-      [centreX+2, centreY]
-    ];
+    snakeSegments = [];
+    for (let i = 0; i < snakeInitialLength; i++) {
+      snakeSegments.push([centreX+(i-Math.ceil(snakeInitialLength/2)), centreY]);
+    }
     snakeDirection = 1;
-    startGameLoop(1000/5, ctx);
+    startGameLoop(1000/fps, ctx);
   }
 }
