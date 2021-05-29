@@ -1,0 +1,112 @@
+* {
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+a, a:visited {display: contents; color: inherit; text-decoration: none;}
+
+body {
+  color: #e1ecff;
+  background: #121317;
+}
+
+.app {
+  width: 100%;
+  display: grid;
+  grid-template-rows: 4rem 1fr;
+  grid-template-columns: 1fr;
+  place-content: center;
+  place-items: center;
+}
+
+header {
+  height: 100%;
+  width: 100%;
+  background: #2e3440;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+header img {
+  padding-left: 2rem;
+  height: 3rem;
+  width: 3rem;
+}
+
+.explorer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 5vh;
+  width: 100%;
+}
+
+main a {
+  display: contents;
+}
+
+main .item {
+  background: #1e2126;
+  min-width: min(20rem, 80%);
+  width: 20%;
+  height: 2rem;
+  border-radius: 0.5rem;
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: #2e3440;
+}
+
+main .item .item-icon {
+  height: 2rem;
+  width: 2rem;
+}
+
+main .item .item-name {
+  padding-left: 1rem;
+}
+
+main .item .item-size {
+  margin-left: auto;
+  font-size: 1.2rem;
+}
+
+@media only screen and (max-width: 900px) {
+  main {
+    justify-content: center;
+  }
+}
+
+::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
+  width: 5px;
+  height: 5px;
+  border-radius: 2.5px;
+}
+
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+  background: #121317;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e1ecff;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d8dee9;
+}
+
+::selection {
+  background: rgba(94, 129, 172, 0.3);
+}

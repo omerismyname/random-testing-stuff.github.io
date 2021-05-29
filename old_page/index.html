@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta charset="utf-8" />
+    <title>Testing</title>
+    <meta name="author" content="Omer">
+    <meta name="description" content="Any projects I don't push to my main site repo">
+    <meta name="theme-color" content="#111111">
+    <link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/favicons/icon-144.png">
+    <link rel="apple-touch-startup-image" href="/favicons/icon-144.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+  <header>
+    <a href="/"><img src="/favicons/icon-144.png" alt="Logo"></a>
+    <p>Online</p>
+  </header> 
+  <main>
+    <a class="back" href="./">
+      <div class="item">
+        <img src="/icons/corner-down-left.svg" class="icon" alt="go back">
+      </div>
+    </a>
+  </main>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js")
+          .then(reg => {
+            console.log("Registered");
+          })
+          .catch(err => {
+            console.log("Registration failed: ", err);
+          });
+      });
+    }
+  </script>
+  <div class="installApp">
+    <span>Access files offline with the app!</span>
+    <button>Install</button>
+  </div>
+  <script src="pwa.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
