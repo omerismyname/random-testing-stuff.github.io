@@ -5,7 +5,6 @@ export default function App() {
   const [tree, setTree] = useState(null);
   const [dir, setDir] = useState(
     window.history.state ||
-    sessionStorage.getItem("dir") ||
     new URLSearchParams(new URL(window.location.href).search).get("dir") ||
     "web-stuff"
   );
@@ -22,16 +21,16 @@ export default function App() {
     });
   }, []);
   window.onpopstate = () => {
-      const tempDir = window.history.state ||
+    setDir(
+      window.history.state ||
       new URLSearchParams(new URL(window.location.href).search).get("dir") ||
-      "web-stuff";
-    setDir(tempDir);
-    sessionStorage.setItem('dir', tempDir);
+      "web-stuff"
+    );
   };
   return (
     <div className="app">
       <header>
-        <a href="/" onClick={() => sessionStorage.setItem('dir', "web-stuff")}>
+        <a href="/">
           <img src="/favicons/icon-144.png" alt="Logo"/>  
         </a>
       </header>
@@ -60,21 +59,21 @@ function Explorer({tree, dir, setDir}) {
 }
 
 function Folder({folder, setDir}) {
+  const folderName = folder.path.split("/").pop();
   return (
     <div className="item" onClick={() => {
       setDir(folder.path);
-      sessionStorage.setItem('dir', folder.path);
-      window.history.pushState(folder.path, "Testing - " + folder.path, `?dir=${encodeURIComponent(folder.path)}`);
+      window.history.pushState(folder.path, "Testing - " + folderName, `?dir=${encodeURIComponent(folder.path)}`);
     }}>
       <img className="item-icon" src="/icons/folder.svg" alt="folder"></img>
-      <span className="item-name">{folder.path.split("/").pop()}</span>
+      <span className="item-name">{folderName}</span>
     </div>
   );
 }
 
 function File({file, dir}) {
   return (
-    <a href={"/" + file.path} onClick={() => sessionStorage.setItem('dir', dir)}>
+    <a href={"/" + file.path}>
       <div className="item">
         <img className="item-icon" src="/icons/file.svg" alt="file"></img>
         <span className="item-name">{file.path.split("/").pop()}</span>
