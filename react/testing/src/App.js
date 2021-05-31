@@ -9,7 +9,7 @@ export default function App() {
     "web-stuff"
   );
   useEffect(() => {
-    fetch("https://cool-api.herokuapp.com/tree")
+    fetch("https://api.omer.ws/tree", {cache: 'no-cache'})
     .then(response => {
       if (response.ok) {
         return response;
