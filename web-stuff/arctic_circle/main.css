@@ -50,6 +50,7 @@ section {
   position: relative;
   pointer-events: all;
   touch-action: auto;
+  image-rendering: pixelated;
 }
 
 .buttons {
