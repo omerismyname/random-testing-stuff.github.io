@@ -20,7 +20,7 @@ line.addEventListener("blur", () => {
 const guestbook = document.querySelector(".guestbook");
 
 function loadGuestbook() {
-  fetch("https://omer-api.herokuapp.com/guestbook", {method: "GET"})
+  fetch("https://guestbook.omer.ws", {cache: "no-cache"})
   .then(response => response.json())
   .then(data => {
     guestbook.innerHTML = "";
@@ -33,7 +33,7 @@ function loadGuestbook() {
 
 
 function onFormSubmit() {
-  fetch("https://omer-api.herokuapp.com/guestbook",
+  fetch("https://guestbook.omer.ws",
   {
     method: "POST",
     headers: {
