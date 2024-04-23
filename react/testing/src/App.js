@@ -1,5 +1,8 @@
 import './App.css';
 import { useEffect, useState } from 'react';
+import { Octokit } from "octokit";
+
+let timesCalledGitHubAPI = 0;
 
 export default function App() {
   const [tree, setTree] = useState(null);
@@ -8,18 +11,27 @@ export default function App() {
     new URLSearchParams(new URL(window.location.href).search).get("dir") ||
     "web-stuff"
   );
+  const octokit = new Octokit();
+
   useEffect(() => {
-    fetch("https://api.omer.ws/tree", {cache: 'no-cache'})
+    timesCalledGitHubAPI++;
+    if (timesCalledGitHubAPI > 100) return;
+    octokit.request('GET /repos/boredblob/random-testing-stuff/contents/' + dir, {
+      owner: 'boredblob',
+      repo: 'random-testing-stuff',
+      path: '/'
+    })
     .then(response => {
-      if (response.ok) {
+      if (response.status === 200) {
         return response;
       }
     })
-    .then(response => response.json())
+    .then(response => response.data)
     .then(responseTree => {
       setTree(responseTree);
     });
-  }, []);
+  }, [dir]);
+
   window.onpopstate = () => {
     setDir(
       window.history.state ||
@@ -42,7 +54,7 @@ export default function App() {
 function Explorer({tree, dir, setDir}) {
   if (tree === null) return <div></div>;
   let elements = parseTree(tree, dir).map(f => {
-    if (f.type === "tree") return <Folder key={f.sha} folder={f} setDir={setDir}></Folder>
+    if (f.type === "dir") return <Folder key={f.sha} folder={f} setDir={setDir}></Folder>
     else return <File key={f.sha} file={f} dir={dir}></File>
   });
   // add back button if not in root
