@@ -29,6 +29,7 @@
 	"type": "module",
 	"dependencies": {
 		"gl-matrix": "^3.4.3",
-		"mathjs": "^12.4.1"
+		"mathjs": "^12.4.1",
+		"three": "^0.163.0"
 	}
 }
