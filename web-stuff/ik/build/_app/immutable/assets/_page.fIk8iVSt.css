@@ -1,0 +1,1 @@
+*{padding:0;margin:0}html,body,main.svelte-yrsz0i{height:100%;width:100%}#canvas.svelte-yrsz0i{height:100%;max-width:100%}main.svelte-yrsz0i{background:#111;display:grid;grid-template-rows:1fr 5rem;place-items:center}@media screen and (width > 100vh){main.svelte-yrsz0i{grid-template-rows:1fr;grid-template-columns:1fr 20rem}}
