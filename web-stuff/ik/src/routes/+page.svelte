@@ -1,7 +1,7 @@
 <main>
   <canvas id="canvas" width="600" height="600"></canvas>
   <div class="controls">
-    <button>{buttonText}</button>
+    <button on:click={changeMode}>{buttonText}</button>
   </div>
 </main>
 
@@ -12,9 +12,18 @@
   import * as THREE from 'three';
 
   let buttonText = "HELLO";
+  let raveMode = false;
+  let changeMode = () => {};
 
   const debugLineGeometry = new THREE.BufferGeometry();
   const debugLine = new THREE.Line( debugLineGeometry, new THREE.LineBasicMaterial( { color: 0x990099 } ) );
+  debugLine.rotateZ(Math.PI/3); // for rave mode
+
+  const debugLineGeometry2 = new THREE.BufferGeometry();
+  const debugLine2 = new THREE.Line( debugLineGeometry2, new THREE.LineBasicMaterial( { color: 0x999900 } ) );
+
+  const debugVectorGeometry = new THREE.BufferGeometry();
+  const debugVector = new THREE.Line( debugVectorGeometry, new THREE.LineBasicMaterial( { color: 0x999999 } ) );
 
   onMount(() => {
     const _canvas = document.querySelector("#canvas");
@@ -45,12 +54,16 @@
     scene.add(targetMarker);
 
     // render bones
-    const boneLength = 10;
-    const bones = [
+    let boneLength = 20;
+    let bones = [
       new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0)),
       new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0)),
       new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0)),
       new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0)),
+      // new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0)),
+      // new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0)),
+      // new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0)),
+      // new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0)),
     ];
 
     const lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
@@ -62,19 +75,79 @@
     scene.add(line);
     
     // debug line declared globally
-    scene.add(debugLine);
+    // scene.add(debugLine);
+    scene.add(debugLine2);
+    scene.add(debugVector);
+
+    let tempBonesCopy = Array.from(bones);
+    let tempBoneLengthCopy = boneLength;
+    changeMode = function() {
+      raveMode = !raveMode;
+      if (raveMode) {
+        scene.add(debugLine);
+        scene.remove(debugLine2);
+        scene.remove(debugVector);
+        scene.remove(originMarker);
+        scene.remove(targetMarker);
+        tempBonesCopy = Array.from(bones);
+        tempBoneLengthCopy = boneLength;
+        boneLength = 50;
+        bones = new Array(10).fill(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0)));
+      } else {
+        scene.remove(debugLine);
+        scene.add(debugLine2);
+        scene.add(debugVector);
+        scene.add(originMarker);
+        scene.add(targetMarker);
+        boneLength = tempBoneLengthCopy;
+        bones = tempBonesCopy;
+      }
+    };
     
+    let frameCount = 0;
     function animate() {
       requestAnimationFrame( animate );
-      buttonText = `(${targetMarker.position.x}, ${targetMarker.position.y}, ${targetMarker.position.z})`;
+      frameCount++;
 
-      solveIK(bones, boneLength, originMarker.position, targetMarker.position, 10);
-      // console.log(...bones[0].elements);
+      if (!raveMode) {
+        buttonText = `(${targetMarker.position.x}, ${targetMarker.position.y}, ${targetMarker.position.z})`;
 
-      points = solveFK(bones, boneLength, originMarker.position, 10);
-      line.geometry = new THREE.BufferGeometry().setFromPoints(points);
-      // const lineGeometry = line.setGeometry(new THREE.BufferGeometry().setFromPoints(points));
+        solveIK(bones, boneLength, originMarker.position, targetMarker.position, 10);
+        // console.log(...bones[0].elements);
 
+        points = solveFK(bones, boneLength, originMarker.position, 10);
+        line.geometry = new THREE.BufferGeometry().setFromPoints(points);
+        // const lineGeometry = line.setGeometry(new THREE.BufferGeometry().setFromPoints(points));
+
+        // debugging stuff
+        let debugBones = new Array(bones.length);
+        for (let i = 0; i < points.length - 1; i++) {
+          let rotMatrix = getRotMatrixBetweenVectors(points[i], points[i+1]);
+          // for (let j = i-1; j > 0; j--) {
+          //   rotMatrix.multiply(bones[j-1]);
+          // }
+          // let lastBone = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0));
+          // rotMatrix.multiply(lastBone);
+          debugVectorDisplay(new THREE.Vector3(20, 0, 0).applyMatrix4(rotMatrix));
+          debugBones[i] = rotMatrix;
+        }
+        let debugPoints = solveFK(debugBones, boneLength, originMarker.position, 10);
+        debugLine2.geometry = new THREE.BufferGeometry().setFromPoints(debugPoints);
+      } else {
+        buttonText = "RAVE MODE ACTIVATED";
+
+        let rotationAngle = Math.log(frameCount) / 100000;
+        for (let i = 0; i < bones.length; i++) {
+          bones[i].multiply(new THREE.Matrix4().makeRotationZ(rotationAngle));
+        }
+
+        points = solveFK(bones, boneLength, originMarker.position, 10);
+        line.geometry = new THREE.BufferGeometry().setFromPoints(points);
+        debugLine.geometry = new THREE.BufferGeometry().setFromPoints(points);
+        line.rotateZ(2*Math.PI/3);
+        debugLine.rotateZ(2*Math.PI/3);
+      }
+      
       renderer.render( scene, camera );
     }
     animate();
@@ -82,8 +155,8 @@
     _canvas.onpointermove = e => {
       if (!pointerdown) return;
       e.preventDefault();
-      let pointerX = ((e.clientX - _canvas.clientLeft) / _canvas.clientWidth) * 2 - 1;
-      let pointerY = ((e.clientY - _canvas.clientTop) / _canvas.clientHeight) * 2 - 1;
+      let pointerX = ((e.clientX - _canvas.offsetLeft) / _canvas.clientWidth) * 2 - 1;
+      let pointerY = ((e.clientY - _canvas.offsetTop) / _canvas.clientHeight) * 2 - 1;
       
       let pointerVector = new THREE.Vector3(pointerX, -pointerY, -1).unproject(camera).sub(camera.position).normalize();
       const raycaster = new THREE.Raycaster(camera.position, pointerVector);
@@ -125,7 +198,7 @@
         const errorToOrigin = currentPoints[0].clone().sub(originVec3).lengthSq();
         if ((errorToTarget+errorToOrigin) < 0.0002) break;
       }
-      debugLine.geometry = new THREE.BufferGeometry().setFromPoints(currentPoints)
+      debugLine.geometry = new THREE.BufferGeometry().setFromPoints(currentPoints) // add debug line
       for (let i = 0; i < bones.length; i++) {
         const updatedPoints = solveFK(bones, boneLength, originVec3);
         bones[i] = getRotMatrixBetweenVectors(updatedPoints[i], currentPoints[i+1]);
@@ -163,10 +236,14 @@
     const v1 = ((vec1.x == 0 && vec1.y == 0 && vec1.z == 0) ? new THREE.Vector3(1, 0, 0) : vec1.clone()).normalize();
     const v3 = vec2.clone().sub(vec1).normalize();
     let rotAxis = v1.clone().cross(v3).normalize();
-    if (Math.abs(Math.abs(rotAxis.z) - 1) > 0.1) console.log(...rotAxis);
+    // if (Math.abs(Math.abs(rotAxis.z) - 1) > 0.1) console.log(...rotAxis); // oops but idk what to do about that
     const rotAngle = v3.angleTo(v1);
     rotAxis = new THREE.Vector3(0, 0, (rotAxis.z > 0) ? 1 : -1); // fix this vec to be z only since I'm just dealing with 2d for now and it makes it more stable
     return new THREE.Matrix4().makeRotationAxis(rotAxis, rotAngle);
+  }
+
+  function debugVectorDisplay(vec) {
+    debugVector.geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), vec]);
   }
 </script>
 
