@@ -123,17 +123,17 @@
         let debugBones = new Array(bones.length);
         for (let i = 0; i < points.length - 1; i++) {
           let rotMatrix = getRotMatrixBetweenVectors(points[i], points[i+1]);
-          // for (let j = i-1; j > 0; j--) {
-          //   rotMatrix.multiply(bones[j-1]);
+          let lastBone = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0));
+          // for (let j = 0; j < i; j++) {
+          //   lastBone.multiply(bones[j]);
           // }
-          // let lastBone = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0, 0, 0));
-          // rotMatrix.multiply(lastBone);
+          rotMatrix.multiply(lastBone.transpose());
           debugVectorDisplay(new THREE.Vector3(20, 0, 0).applyMatrix4(rotMatrix));
           debugBones[i] = rotMatrix;
         }
         let debugPoints = solveFK(debugBones, boneLength, originMarker.position, 10);
         debugLine2.geometry = new THREE.BufferGeometry().setFromPoints(debugPoints);
-      } else {
+      } else { // ---------------------------------------------------------------------
         buttonText = "RAVE MODE ACTIVATED";
 
         let rotationAngle = Math.log(frameCount) / 100000;
