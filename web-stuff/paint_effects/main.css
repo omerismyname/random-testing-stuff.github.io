@@ -1,0 +1,43 @@
+* { 
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 200%;
+}
+
+@property --fleck-colors {
+  syntax: '<color>+';
+  initial-value: black white;
+  inherits: true;
+}
+
+@property --fleck-density {
+  syntax: '<integer>';
+  initial-value: 50;
+  inherits: true;
+}
+
+@property --fleck-size-base {
+  syntax: '<length>';
+  initial-value: 4px;
+  inherits: true;
+}
+
+@property --fleck-seed {
+  syntax: '<integer>';
+  initial-value: 1;
+  inherits: true;
+}
+
+.fleck {
+  width: 100%;
+  height: 100%;
+  background-color: #84dce2;
+  --fleck-colors: #0193c1 #74d8e6 #0bc0e0 #3ddaf5 #e2f9fe #02313f;
+  background-image: paint(fleck);
+  --fleck-seed: 123;
+  --fleck-density: 300;
+}
