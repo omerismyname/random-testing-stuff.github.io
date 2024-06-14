@@ -10,7 +10,7 @@ html, body {
 
 @property --fleck-colors {
   syntax: '<color>+';
-  initial-value: black white;
+  initial-value: #000 #fff;
   inherits: true;
 }
 
