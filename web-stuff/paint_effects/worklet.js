@@ -117,22 +117,6 @@ class Mulberry32 {
 registerPaint(
   'fleck',
   class {
-    static inputProperties = [
-      '--fleck-seed',
-      '--fleck-density',
-      '--fleck-size-base',
-      '--fleck-colors',
-    ];
-
-    static cache = [];
-    static cachedSize = [0, 0];
-    static cachedProps = {
-      seed: 0,
-      density: 0,
-      baseSize: 0,
-      colors: []
-    }
-
     constructor() {
       this.cache = [];
       this.cachedSize = [0, 0];
@@ -142,7 +126,19 @@ registerPaint(
         baseSize: 0,
         colors: []
       }
+      console.log("resetting caches");
     }
+
+    static inputProperties = [
+      '--fleck-seed',
+      '--fleck-density',
+      '--fleck-size-base',
+      '--fleck-colors',
+    ];
+
+    static cache;
+    static cachedSize;
+    static cachedProps;
 
     paint(ctx, size, props) {
       console.time("paint");
