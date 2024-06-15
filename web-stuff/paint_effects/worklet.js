@@ -132,44 +132,31 @@ registerPaint(
       const baseSize = props.get('--fleck-size-base').value;
       const colors = props.getAll('--fleck-colors').map((s) => s.toString());
       const pixelBlobChance = (density/(300*300)) * 4294967296;
-      const tileSize = 8;
       let numLoops = 0;
       let numFlecks = 0;
+      let random = new Mulberry32(seed);
 
-      const random = new Mulberry32(seed);
+      for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+          random.state = seed*((x * 2**16)+y);
+          numLoops++;
+          if (random.nextInt() > pixelBlobChance) continue;
+          
+          let radius = baseSize*0.7;
+          if (random.nextInt() > (0.5*2**32)) radius /= 2;
+          if (random.nextInt() > (0.9*2**32)) radius *= 4;
 
-      for (let tx = 0; tx < width; tx+=tileSize) {
-        for (let ty = 0; ty < height; ty+=tileSize) {
-          let tileRandom = random.fork(); 
-          // console.log(`tile (${tx}, ${ty}), size: ${Math.min(width-tx, tileSize)}x${Math.min(height-ty, tileSize)}`);
-          for (let x = 0; x < Math.min(width-tx, tileSize); x++) {
-            for (let y = 0; y < Math.min(height-ty, tileSize); y++) {
-              numLoops++;
-              if (tileRandom.nextInt() > pixelBlobChance) continue;
-              const trueX = tx+x;
-              const trueY = ty+y;
-              
-              let radius = baseSize;
-              if (tileRandom.nextInt() > (0.5*2**32)) radius /= 2;
-              if (tileRandom.nextInt() > (0.9*2**32)) radius *= 4;
-              radius = Math.max(1, Math.min(radius, 24));
-              radius *= 0.7;
-    
-              const color = colors[Math.floor(tileRandom.next()*colors.length)];
-    
-              numFlecks++;
-              drawBlob(
-                ctx,
-                tileRandom,
-                trueX,
-                trueY,
-                radius,
-                color,
-              );
-              // ctx.fillStyle = color;
-              // ctx.fillRect(trueX, trueY, 5, 5);
-            }
-          }
+          const color = colors[Math.floor(random.next()*colors.length)];
+
+          numFlecks++;
+          drawBlob(
+            ctx,
+            random,
+            x,
+            y,
+            radius,
+            color,
+          );
         }
       }
       console.timeEnd("paint");
