@@ -62,9 +62,10 @@ function drawPoints(ctx) {
   ctx.closePath();
 }
 
-function drawBlob(ctx, random, x, y, size, color) {
+function drawBlob(ctx, PRNGSeed, x, y, size, color) {
   // Reset points
   blobPoints.set(sevenPointCircle);
+  let random = new Mulberry32(PRNGSeed);
 
   // Randomly shift the points a bit
   for (let i = 0; i < blobPoints.length; i += entriesPerPoint) {
@@ -123,41 +124,66 @@ registerPaint(
       '--fleck-colors',
     ];
 
+    static cache = [];
+    static cachedSize = [0, 0];
+    static cachedProps = {
+      seed: 0,
+      density: 0,
+      baseSize: 0,
+      colors: []
+    }
+
+    constructor() {
+      this.cache = [];
+      this.cachedSize = [0, 0];
+      this.cachedProps = {
+        seed: 0,
+        density: 0,
+        baseSize: 0,
+        colors: []
+      }
+    }
+
     paint(ctx, size, props) {
       console.time("paint");
       const width = size.width;
       const height = size.height;
-      const seed = props.get('--fleck-seed').value;
-      const density = props.get('--fleck-density').value;
-      const baseSize = props.get('--fleck-size-base').value;
-      const colors = props.getAll('--fleck-colors').map((s) => s.toString());
-      const pixelBlobChance = (density/(300*300)) * 4294967296;
-      let numLoops = 0;
-      let numFlecks = 0;
-      let random = new Mulberry32(seed);
 
-      for (let x = 0; x < width; x++) {
-        for (let y = 0; y < height; y++) {
-          random.state = seed*((x * 2**16)+y);
-          numLoops++;
-          if (random.nextInt() > pixelBlobChance) continue;
-          
-          let radius = baseSize*0.7;
-          if (random.nextInt() > (0.5*2**32)) radius /= 2;
-          if (random.nextInt() > (0.9*2**32)) radius *= 4;
+      const propsObj = {
+        seed: props.get('--fleck-seed').value,
+        density: props.get('--fleck-density').value,
+        baseSize: props.get('--fleck-size-base').value,
+        colors: props.getAll('--fleck-colors').map((s) => s.toString())
+      }
 
-          const color = colors[Math.floor(random.next()*colors.length)];
-
-          numFlecks++;
-          drawBlob(
-            ctx,
-            random,
-            x,
-            y,
-            radius,
-            color,
-          );
+      if (havePropsChanged(this.cachedProps, propsObj)) {
+        console.log("props changed, rebuilding from scratch");
+        console.log(this.cachedProps, propsObj);
+        this.cache = [];
+        this.cachedSize = [width, height];
+        this.cachedProps = propsObj;
+        this.generateNewArea(0, 0, width, height, propsObj);
+      } else {
+        console.log(this.cachedSize, [width, height]);
+        if (hasSizeIncreased(this.cachedSize, [width, height])) { //generate extra bits to fill
+          console.log("generating new area");
+          this.generateNewArea(this.cachedSize[0], 0, width - this.cachedSize[0], height, propsObj); // rightmost new column
+          this.generateNewArea(0, this.cachedSize[1], this.cachedSize[0], height, propsObj); //underneath area up to col
+          this.cachedSize = [width, height];
         }
+      }
+      // otherwise cache is assumed not stale
+      console.log(this.cache.length);
+
+      for (let i = 0; i < this.cache.length; i++) {
+        drawBlob(
+          ctx,
+          this.cache[i].PRNGSeed,
+          this.cache[i].xPos,
+          this.cache[i].yPos,
+          this.cache[i].size,
+          this.cache[i].color,
+        );
       }
       console.timeEnd("paint");
       // console.log(`${endTime-startTime}ms`)
@@ -165,8 +191,55 @@ registerPaint(
       // console.log(`painted ${numFlecks} flecks. ${numLoops}/${Math.ceil(width)*Math.ceil(height)} pixels calculated`);
       // console.log(`height: ${height} width: ${width}`);
     }
+
+    generateNewArea(left, top, width, height, props) {
+      // TODO add back in props
+      const pixelBlobChance = (props.density/(300*300)) * 4294967296;
+      let numLoops = 0;
+      
+      let random = new Mulberry32(props.seed);
+      for (let x = left; x < width; x++) {
+        for (let y = top; y < height; y++) {
+          random.state = props.seed*((x * 2**16)+y);
+          numLoops++;
+          if (random.nextInt() > pixelBlobChance) continue;
+
+          let radius = props.baseSize*0.7;
+          if (random.nextInt() > (0.5*2**32)) radius /= 2;
+          if (random.nextInt() > (0.9*2**32)) radius *= 4;
+
+          this.cache.push({
+            xPos: x,
+            yPos: y,
+            size: radius,
+            color: props.colors[Math.floor(random.next()*props.colors.length)],
+            PRNGSeed: props.seed*((x * 2**16)+y)
+          });
+        }
+      }
+    }
   },
 );
+
+function havePropsChanged(cachedProps, newProps) {
+  for (let key of Object.keys(cachedProps)) {
+    if (Array.isArray(cachedProps[key])) {
+      if (cachedProps[key].length !== newProps[key].length) return true;
+      for (let i = 0; i < cachedProps[key].length; i++) {
+        if (!cachedProps[key].includes(newProps[key][i])) return true;
+      }
+    } else {
+      if (cachedProps[key] !== newProps[key]) return true;
+    }
+  }
+  return false;
+}
+
+function hasSizeIncreased(cachedSize, newSize) {
+  if (newSize[0] > cachedSize[0]) return true; 
+  if (newSize[1] > cachedSize[1]) return true; 
+  return false;
+}
 
 function pairingFunction(x, y) {
   return (1/2)*(x+y)*(x+y+1)*y;
