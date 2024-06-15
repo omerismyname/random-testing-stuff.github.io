@@ -124,6 +124,7 @@ registerPaint(
     ];
 
     paint(ctx, size, props) {
+      console.time("paint");
       const width = size.width;
       const height = size.height;
       const seed = props.get('--fleck-seed').value;
@@ -131,41 +132,51 @@ registerPaint(
       const baseSize = props.get('--fleck-size-base').value;
       const colors = props.getAll('--fleck-colors').map((s) => s.toString());
       const pixelBlobChance = (density/(300*300)) * 4294967296;
-      const tileSize = 16;
+      const tileSize = 8;
+      let numLoops = 0;
+      let numFlecks = 0;
 
       const random = new Mulberry32(seed);
+
       for (let tx = 0; tx < width; tx+=tileSize) {
         for (let ty = 0; ty < height; ty+=tileSize) {
-          for (let x = 0; x < tileSize; x++) {
-            for (let y = 0; y < tileSize; y++) {
-              if (random.nextInt() > pixelBlobChance) continue;
+          let tileRandom = random.fork(); 
+          // console.log(`tile (${tx}, ${ty}), size: ${Math.min(width-tx, tileSize)}x${Math.min(height-ty, tileSize)}`);
+          for (let x = 0; x < Math.min(width-tx, tileSize); x++) {
+            for (let y = 0; y < Math.min(height-ty, tileSize); y++) {
+              numLoops++;
+              if (tileRandom.nextInt() > pixelBlobChance) continue;
               const trueX = tx+x;
               const trueY = ty+y;
               
               let radius = baseSize;
-              if (random.nextInt() > (0.5*2**32)) radius /= 2;
-              if (random.nextInt() > (0.9*2**32)) radius *= 4;
+              if (tileRandom.nextInt() > (0.5*2**32)) radius /= 2;
+              if (tileRandom.nextInt() > (0.9*2**32)) radius *= 4;
               radius = Math.max(1, Math.min(radius, 24));
               radius *= 0.7;
     
-              const color = colors[Math.floor(random.next()*colors.length)];
+              const color = colors[Math.floor(tileRandom.next()*colors.length)];
     
-
+              numFlecks++;
               drawBlob(
                 ctx,
-                random,
+                tileRandom,
                 trueX,
                 trueY,
                 radius,
                 color,
               );
               // ctx.fillStyle = color;
-              // ctx.fillRect(x, y, 1, 1);
+              // ctx.fillRect(trueX, trueY, 5, 5);
             }
           }
         }
       }
+      console.timeEnd("paint");
       // console.log(`${endTime-startTime}ms`)
+      // if (numLoops !== Math.ceil(width)*Math.ceil(height)) console.log("ERROR");
+      // console.log(`painted ${numFlecks} flecks. ${numLoops}/${Math.ceil(width)*Math.ceil(height)} pixels calculated`);
+      // console.log(`height: ${height} width: ${width}`);
     }
   },
 );
