@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/flag.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minesweeper</title>
+  </head>
+  <body>
+    <div id="app">
+      <main class="main">
+        <div class="ui">
+          <span class="flagcounter">
+            <p class="flag">🚩</p><p>:&nbsp;</p><p class="counter">0</p>
+          </span>
+        </div>
+        <div class="game">
+          <canvas></canvas>
+          <h1 class="gameover">Game Over</h1>
+        </div>
+        <div class="buttons">
+          <button class="reset">Reset</button><button class="solve">Solve</button>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
