@@ -178,6 +178,9 @@ canvas.oncontextmenu = e => {
 function clearCellsOnClick(x, y) {
   if (gameOver) return;
 
+  // checking the cell isn't flagged
+  if (flaggedGrid[y*gridSize+x] === true) return;
+
   if (firstClick) {
     for (let i = 0; i < 1000; i++) {
       if (minesGrid[y*gridSize+x] === 0) break;
@@ -187,9 +190,6 @@ function clearCellsOnClick(x, y) {
     }
     firstClick = false;
   }
-
-  // checking the cell isn't flagged
-  if (flaggedGrid[y*gridSize+x] === true) return;
 
   if (minesGrid[y*gridSize+x] === -1) {
     endGame();
