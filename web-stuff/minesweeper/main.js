@@ -21,7 +21,7 @@ window.debug = false;
 const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
 // tell the browser what size the canvas is? idk it just helps scaling things I think
-const canvasSizePx = Math.min(window.innerWidth, window.innerHeight-4*rem-5*rem);
+const canvasSizePx = Math.min(window.screen.width, window.innerWidth, window.innerHeight-4*rem-5*rem);
 [canvas.width, canvas.height] = [canvasSizePx*pixelRatio, canvasSizePx*pixelRatio];
 canvas.style.width = canvasSizePx + 'px';
 canvas.style.height = canvasSizePx + 'px';

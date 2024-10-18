@@ -59,7 +59,7 @@ html, body, #app {
 }
 
 .ui {
-  width: max(calc(100% - 40rem), 30rem);
+  width: max(50%, 15rem);
   height: 100%;
 }
 
