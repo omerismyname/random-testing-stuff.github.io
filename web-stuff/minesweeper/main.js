@@ -15,12 +15,16 @@ const pixelRatio = window.devicePixelRatio || 1;
 ctx.scale(pixelRatio, pixelRatio);
 ctx.imageSmoothingEnabled = false;
 ctx.textRendering = "optimizeLegibility";
+window.debug = false;
+
+
+const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
 // tell the browser what size the canvas is? idk it just helps scaling things I think
-const [width, height] = [canvas.clientWidth, canvas.clientHeight];
-[canvas.width, canvas.height] = [width*pixelRatio, height*pixelRatio];
-canvas.style.width = width + 'px';
-canvas.style.height = height + 'px';
+const canvasSizePx = Math.min(window.innerWidth, window.innerHeight-4*rem-5*rem);
+[canvas.width, canvas.height] = [canvasSizePx*pixelRatio, canvasSizePx*pixelRatio];
+canvas.style.width = canvasSizePx + 'px';
+canvas.style.height = canvasSizePx + 'px';
 
 // globals for game
 const canvasSize = Math.min(canvas.clientWidth, canvas.clientHeight) * pixelRatio;
@@ -29,11 +33,13 @@ const cellSize = Math.floor(canvasSize / gridSize);
 const minesGrid = Array(gridSize*gridSize).fill(0);
 const clearedGrid = Array(gridSize*gridSize).fill(false);
 const flaggedGrid = Array(gridSize*gridSize).fill(false);
+const guessingGrid = Array(gridSize*gridSize).fill(0);
 const gridPixelSize = gridSize*cellSize;
 const outerMargin = ((canvasSize - gridPixelSize) / 2)/pixelRatio; // margin width around game region of canvas
 let gameOver = false;
 const numMines = 64;
 let firstClick = true;
+let guessingMode = false;
 
 // init font to match cell size
 ctx.font = `${cellSize}px sans-serif`
@@ -84,10 +90,22 @@ function renderGrid() {
       // add flags
       if (flaggedGrid[y*gridSize+x]) {
         ctx.fillStyle = "red";
-        ctx.font = `${cellSize*0.8}px sans-serif`
+        ctx.font = `${cellSize*0.8}px sans-serif`;
         const [textOffX, textOffY] = getCentredTextOffsets(minesGrid[y*gridSize+x]);
         ctx.fillText("🚩", adjX+(cellSize/2), adjY+(cellSize/2)+textOffY);
-        ctx.font = `${cellSize}px sans-serif`
+        ctx.font = `${cellSize}px sans-serif`;
+      }
+
+      // add debug text
+      if (window.debug && guessingMode) {
+        ctx.fillStyle = "black";
+        ctx.textAlign = "left";
+        ctx.font = `${cellSize*0.4}px sans-serif`;
+        // ctx.fillText(Math.round(guessingGrid[y*gridSize+x]*10)/10,adjX+2, adjY+2);
+        const guessValue = guessingGrid[y*gridSize+x];
+        if (guessValue > 0) ctx.fillText(guessingGrid[y*gridSize+x],adjX+2, adjY+2);
+        ctx.font = `${cellSize}px sans-serif`;
+        ctx.textAlign = "center";
       }
 
       flagCounter.innerHTML = numMines - flaggedGrid.reduce((sum, x) => sum + x);
@@ -160,8 +178,9 @@ function clickEventToGridCoords(clickX, clickY) {
 
 canvas.onclick = e => {
   e.preventDefault();
-  // transform pointer coords into cell coords
+  if (gameOver) resetEndGameOverlay();
 
+  // transform pointer coords into cell coords
   const [pointerGridX, pointerGridY] = clickEventToGridCoords(e.offsetX, e.offsetY);
   clearCellsOnClick(pointerGridX, pointerGridY);
   renderGrid();
@@ -246,49 +265,43 @@ function endGame(won = false) {
   gameOver = true;
 }
 
+function resetEndGameOverlay() {
+  canvas.style = "";
+  canvas.style.width = canvasSizePx + 'px';
+  canvas.style.height = canvasSizePx + 'px';
+  gameOverText.style = "";
+  gameOverText.innerHTML = "Game Over";
+}
+
 function resetGame() {
   minesGrid.fill(0);
   clearedGrid.fill(false);
   flaggedGrid.fill(false);
+  guessingGrid.fill(0);
   initMinesGrid();
-  canvas.style = "";
-  canvas.style.width = width + 'px';
-  canvas.style.height = height + 'px';
-  gameOverText.style = "";
-  gameOverText.innerHTML = "Game Over";
+  resetEndGameOverlay();
+  hideGuessUI();
   renderGrid();
   gameOver = false;
   firstClick = true;
 }
 
 function autoSolve() {
+  if (gameOver) return;
+  if (guessingMode) return runGuessingSolver();
   if (firstClick) {
-    clearCellsOnClick(Math.floor((gridSize-1)/2), Math.floor((gridSize-1)/2));
-    renderGrid();
-  }
-  for (let i = 0; i < 100; i++) {
-    setTimeout(() => solverIteration(), 0);
-    if (gameOver) break;
+    requestAnimationFrame(() => {
+      clearCellsOnClick(Math.floor((gridSize-1)/2), Math.floor((gridSize-1)/2));
+      renderGrid();
+      requestAnimationFrame(() => solverIteration(0, true));
+    });
+  } else {
+    requestAnimationFrame(() => solverIteration(0, true));
   }
 }
 
-function solverIteration() {
-  //set up flags
-  for (let y = 0; y < gridSize; y++) {
-    for (let x = 0; x < gridSize; x++) {
-      if ((clearedGrid[y*gridSize+x] === true) && (minesGrid[y*gridSize+x] > 0)) {
-        let n = minesGrid[y*gridSize+x];
-        let neighbours = getSurroundingCellCoords(x,y);
-        let unclearedNeighbours = neighbours.filter(coords => (!clearedGrid[coords[1]*gridSize+coords[0]]));
-        if (n === unclearedNeighbours.length) {
-          for (let neighbour of unclearedNeighbours.filter(coords => (!flaggedGrid[coords[1]*gridSize+coords[0]]))) {
-            toggleFlag(neighbour[0], neighbour[1]);
-          }
-        }
-      }
-    }
-  }
-  renderGrid();
+function solverIteration(iterationNumber = 0, loop = false) {
+  let numActionsTakenBefore = clearedGrid.reduce((sum, a) => sum+a)+flaggedGrid.reduce((sum, a) => sum+a);
   // clear all possible unflagged cells
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
@@ -306,6 +319,105 @@ function solverIteration() {
     }
   }
   renderGrid();
+  //set up flags
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      if ((clearedGrid[y*gridSize+x] === true) && (minesGrid[y*gridSize+x] > 0)) {
+        let n = minesGrid[y*gridSize+x];
+        let neighbours = getSurroundingCellCoords(x,y);
+        let unclearedNeighbours = neighbours.filter(coords => (!clearedGrid[coords[1]*gridSize+coords[0]]));
+        if (n === unclearedNeighbours.length) {
+          for (let neighbour of unclearedNeighbours.filter(coords => (!flaggedGrid[coords[1]*gridSize+coords[0]]))) {
+            toggleFlag(neighbour[0], neighbour[1]);
+          }
+        }
+      }
+    }
+  }
+  renderGrid();
+  let numActionsTakenAfter = clearedGrid.reduce((sum, a) => sum+a)+flaggedGrid.reduce((sum, a) => sum+a);
+  let numActionsThisStep = numActionsTakenAfter-numActionsTakenBefore;
+  if ((numActionsThisStep === 0) && !gameOver) showGuessUI();
+  if (numActionsThisStep === 0) return 1;
+  if (gameOver) return 1;
+  if (loop) requestAnimationFrame(() => solverIteration(iterationNumber+1, true));
+  return 0;
+}
+
+function indexOfSmallestNonZero(arr) {
+  let lowest = 0;
+  let firstNonZeroValueFound = false;
+  for (let i = 1; i < arr.length; i++) {
+    if (!(firstNonZeroValueFound) && (arr[i] > 0)) {
+      firstNonZeroValueFound = true;
+      lowest = i;
+    }
+    if ((arr[i] > 0) && (arr[i] < arr[lowest])) lowest = i;
+  }
+  return lowest;
+}
+
+function indexOfHighest(arr) {
+  let highest = 0;
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > arr[highest]) highest = i;
+  }
+  return highest;
+}
+
+function runGuessingSolver() {
+  console.log("guessing");
+  requestAnimationFrame(() => {
+    guessingStep(true);
+    solverIteration(0, true);
+  });
+}
+
+function guessingStep(flag = false) {
+  guessingGrid.fill(0);
+  // calculate number of potential mine cells and weight them accordingly
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      if ((clearedGrid[y*gridSize+x] === true) && (minesGrid[y*gridSize+x] > 0)) {
+        let n = minesGrid[y*gridSize+x];
+        let neighbours = getSurroundingCellCoords(x,y);
+        let unclearedNeighbours = neighbours.filter(coords => (!clearedGrid[coords[1]*gridSize+coords[0]]));
+        let flaggedNeighbours = neighbours.filter(coords => (flaggedGrid[coords[1]*gridSize+coords[0]]));
+        if (unclearedNeighbours.length > flaggedNeighbours.length) {
+          let potentialMines = unclearedNeighbours.filter(coords => (!flaggedGrid[coords[1]*gridSize+coords[0]]));
+          for (let pm of potentialMines) {
+            guessingGrid[pm[1]*gridSize+pm[0]] += n/potentialMines.length;
+          }
+        }
+      }
+    }
+  }
+
+  if (!flag) {
+    // clear lowest-weighted cell
+    const lowestWeightedCell = indexOfSmallestNonZero(guessingGrid);
+    clearCellsOnClick(...gridIndexToCoords(lowestWeightedCell));
+
+  } else {
+    // flag highest-weighted cell
+    const lowestWeightedCell = indexOfHighest(guessingGrid);
+    toggleFlag(...gridIndexToCoords(lowestWeightedCell));
+  }
+  renderGrid();
+  // console.log(indexOfSmallestNonZero(guessingGrid), gridIndexToCoords(indexOfSmallestNonZero(guessingGrid)));
+  // console.log(guessingGrid[lowestWeightedCell]);  
+}
+
+function showGuessUI() {
+  solveButton.innerHTML = "Guess";
+  solveButton.style.background = "coral";
+  guessingMode = true;
+}
+
+function hideGuessUI() {
+  solveButton.innerHTML = "Solve";
+  solveButton.style = "";
+  guessingMode = false;
 }
 
 initMinesGrid(); // intermediate

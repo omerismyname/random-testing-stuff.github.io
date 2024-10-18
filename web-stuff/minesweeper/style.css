@@ -47,6 +47,7 @@ html, body, #app {
   height: 100%;
   aspect-ratio: 1;
   image-rendering: pixelated;
+  transition: filter 125ms ease-in-out;
 }
 
 .gameover {
