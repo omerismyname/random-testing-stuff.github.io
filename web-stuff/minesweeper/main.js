@@ -16,6 +16,7 @@ ctx.scale(pixelRatio, pixelRatio);
 ctx.imageSmoothingEnabled = false;
 ctx.textRendering = "optimizeLegibility";
 window.debug = false;
+window.verbose = false;
 
 
 const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -40,9 +41,11 @@ let gameOver = false;
 const numMines = 64;
 let firstClick = true;
 let guessingMode = false;
+let gameWins = 0;
+let gameLosses = 0;
 
 // init font to match cell size
-ctx.font = `${cellSize}px sans-serif`
+ctx.font = `${cellSize}px sans-serif`;
 ctx.textBaseline = "top";
 ctx.textAlign = "center";
 const fontColoursDict = {
@@ -114,7 +117,7 @@ function renderGrid() {
 }
 
 function coordsToPixels(x, y) {
-  return [outerMargin+x*cellSize, outerMargin+y*cellSize]
+  return [outerMargin+x*cellSize, outerMargin+y*cellSize];
 }
 
 function gridIndexToCoords(index) {
@@ -203,15 +206,15 @@ function clearCellsOnClick(x, y) {
   if (firstClick) {
     for (let i = 0; i < 1000; i++) {
       if (minesGrid[y*gridSize+x] === 0) break;
-      console.log(`regen attempt #${i}.`);
+      if (window.verbose) console.log(`regen attempt #${i}.`);
       resetGame();
-      if (i === 0) console.log("(just making sure you don't lose on the first turn)");
+      if (window.verbose && (i === 0)) console.log("(just making sure you don't lose on the first turn)");
     }
     firstClick = false;
   }
 
   if (minesGrid[y*gridSize+x] === -1) {
-    endGame();
+    endGame(false);
     return;
   }
   
@@ -259,7 +262,11 @@ function checkForWin() {
 function endGame(won = false) {
   if (won) {
     gameOverText.innerHTML = "You Win!";
+    gameWins++;
+  } else {
+    gameLosses++;
   }
+  if (window.debug) console.log(`Win rate: ${gameWins}/${gameWins+gameLosses}, ${Math.round((gameWins*10000)/(gameWins+gameLosses))/100}%`);
   canvas.style.filter = "blur(5px)";
   gameOverText.style.display = "block";
   gameOver = true;
@@ -366,7 +373,6 @@ function indexOfHighest(arr) {
 }
 
 function runGuessingSolver() {
-  console.log("guessing");
   requestAnimationFrame(() => {
     guessingStep(true);
     solverIteration(0, true);
