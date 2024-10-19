@@ -43,6 +43,7 @@ let firstClick = true;
 let guessingMode = false;
 let gameWins = 0;
 let gameLosses = 0;
+let highlightedCellIndex = -1;
 
 // init font to match cell size
 ctx.font = `${cellSize}px sans-serif`;
@@ -86,7 +87,15 @@ function renderGrid() {
 
       // cover if not clear with foreground checkerboard
       if (!clearedGrid[y*gridSize+x]) {
-        ctx.fillStyle = ((y+x) % 2 === 0) ? "limegreen" : "green";
+        ctx.fillStyle = ((y+x) % 2 === 0) ? "#56B740" : "#238223";
+        
+        // highlight cell if hovered over
+        if (highlightedCellIndex === y*gridSize+x) {
+          ctx.fillStyle = ((y+x) % 2 === 0) ? "#8CCC7A" : "#7FC76B";
+          // ctx.fillStyle = ((y+x) % 2 === 0) ? "rgba(201, 238, 191, 0.5)" : "rgba(201, 255, 185, 0.6)";
+          // ctx.fillRect(adjX, adjY, cellSize, cellSize);
+        }
+
         ctx.fillRect(adjX, adjY, cellSize, cellSize);
       }
 
@@ -172,9 +181,17 @@ function getSurroundingCellCoords(x, y) {
   })
 }
 
-function clickEventToGridCoords(clickX, clickY) {
-  const pointerGridX = Math.floor(((clickX - (canvas.clientLeft+outerMargin)) / (canvas.clientWidth - outerMargin*2)) * gridSize);
-  const pointerGridY = Math.floor(((clickY - (canvas.clientTop+outerMargin)) /  (canvas.clientHeight - outerMargin*2)) * gridSize);
+function isPointerInDrawArea(pointerX, pointerY) {
+  const pointerScaledX = (pointerX - (canvas.clientLeft+outerMargin/pixelRatio)) / (canvas.clientWidth - outerMargin*2);
+  const pointerScaledY = (pointerY - (canvas.clientTop+outerMargin/pixelRatio)) /  (canvas.clientHeight - outerMargin*2)
+  return (
+    ((0 < pointerScaledX) && (pointerScaledX < 1) && (0 < pointerScaledY) && (pointerScaledY < 1))
+  );
+}
+
+function pointerEventToGridCoords(pointerX, pointerY) {
+  const pointerGridX = Math.floor(((pointerX - (canvas.clientLeft+outerMargin/pixelRatio)) / (canvas.clientWidth - outerMargin*2)) * gridSize);
+  const pointerGridY = Math.floor(((pointerY - (canvas.clientTop+outerMargin/pixelRatio)) /  (canvas.clientHeight - outerMargin*2)) * gridSize);
   if (pointerGridX < 0 || pointerGridY < 0 || pointerGridX > gridSize-1 || pointerGridY > gridSize-1) console.log("POINTER ERROR OUT OF BOUNDS, pos: ", pointerGridX, pointerGridY);
   return [pointerGridX, pointerGridY];
 }
@@ -183,19 +200,40 @@ canvas.onclick = e => {
   e.preventDefault();
   if (gameOver) resetEndGameOverlay();
 
+  // check the pointer coords are in the 
+  if (!isPointerInDrawArea(e.offsetX, e.offsetY)) return;
+
   // transform pointer coords into cell coords
-  const [pointerGridX, pointerGridY] = clickEventToGridCoords(e.offsetX, e.offsetY);
+  const [pointerGridX, pointerGridY] = pointerEventToGridCoords(e.offsetX, e.offsetY);
   clearCellsOnClick(pointerGridX, pointerGridY);
   renderGrid();
 }
 
 canvas.oncontextmenu = e => {
   e.preventDefault();
+
+  // check the pointer coords are in the 
+  if (!isPointerInDrawArea(e.offsetX, e.offsetY)) return;
   
-  const [pointerGridX, pointerGridY] = clickEventToGridCoords(e.offsetX, e.offsetY);
+  const [pointerGridX, pointerGridY] = pointerEventToGridCoords(e.offsetX, e.offsetY);
   toggleFlag(pointerGridX, pointerGridY);
   renderGrid();
 }
+
+canvas.onpointermove = e => {
+  if (e.pointerType !== "mouse") return;
+  if (gameOver) return (highlightedCellIndex = 0);
+  if (isPointerInDrawArea(e.offsetX, e.offsetY)) {
+    const [pointerGridX, pointerGridY] = pointerEventToGridCoords(e.offsetX, e.offsetY);
+    // console.log(pointerEventToGridCoords(e.offsetX, e.offsetY))
+    highlightedCellIndex = pointerGridY * gridSize + pointerGridX;
+    requestAnimationFrame(renderGrid);
+  } else {
+    canvasLeaveHandler();
+  }
+};
+
+canvas.onpointerleave = canvasLeaveHandler;
 
 function clearCellsOnClick(x, y) {
   if (gameOver) return;
@@ -242,6 +280,11 @@ function toggleFlag(x, y) {
   if (clearedGrid[y*gridSize+x] === true) return;
   flaggedGrid[y*gridSize+x] = !flaggedGrid[y*gridSize+x];
   checkForWin();
+}
+
+function canvasLeaveHandler() {
+  highlightedCellIndex = -1;
+  requestAnimationFrame(renderGrid);
 }
 
 function checkForWin() {
@@ -427,4 +470,6 @@ function hideGuessUI() {
 }
 
 initMinesGrid(); // intermediate
+console.time("render");
 renderGrid();
+console.timeEnd("render");
