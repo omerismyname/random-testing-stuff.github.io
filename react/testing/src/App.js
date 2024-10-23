@@ -16,8 +16,8 @@ export default function App() {
   useEffect(() => {
     timesCalledGitHubAPI++;
     if (timesCalledGitHubAPI > 100) return;
-    octokit.request('GET /repos/boredblob/random-testing-stuff/contents/' + dir, {
-      owner: 'boredblob',
+    octokit.request('GET /repos/mcnomer/random-testing-stuff/contents/' + dir, {
+      owner: 'mcnomer',
       repo: 'random-testing-stuff',
       path: '/'
     })
