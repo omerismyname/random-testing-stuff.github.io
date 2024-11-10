@@ -1,12 +1,19 @@
 import './style.css'
+import * as ort from 'onnxruntime-web/webgpu';
 
 // init buttons
 const resetButton = document.querySelector(".buttons > .reset");
 resetButton.onclick = () => resetGame();
 const solveButton = document.querySelector(".buttons > .solve");
 solveButton.onclick = () => autoSolve();
+const MLButton = document.querySelector(".buttons > .solve-ml");
+MLButton.onclick = () => solveWithML();
 const gameOverText = document.querySelector(".gameover");
 const flagCounter = document.querySelector(".flagcounter > .counter");
+
+let a = await fetch('./test.onnx')
+ort.env.wasm.wasmPaths = "./node_modules/onnxruntime-web/dist/"
+const session = await ort.InferenceSession.create('./test.onnx', { executionProviders: ['webgpu'], })
 
 // init canvas
 const canvas = document.querySelector(".main > .game > canvas");
@@ -467,6 +474,37 @@ function hideGuessUI() {
   solveButton.innerHTML = "Solve";
   solveButton.style = "";
   guessingMode = false;
+}
+
+async function solveWithML() {
+  if (gameOver) return;
+  const state = new Float32Array(gridSize*gridSize);
+  for (let i = 0; i < gridSize*gridSize; i++) {
+    if (clearedGrid[i]) {
+      state[i] = minesGrid[i] / 8;
+    } else {
+      state[i] = -1
+    }
+  }
+  let stateTensor = new ort.Tensor('float32', state, [gridSize, gridSize])
+  stateTensor = stateTensor.reshape([1, 1, gridSize, gridSize])
+  const result = await session.run({"input": stateTensor})
+  const action_probs = result.output.data
+  for (let i = 0; i < gridSize*gridSize; i++) {
+    if (clearedGrid[i]) {
+      action_probs[i] = -Infinity;
+    }
+  }
+  let action = action_probs.indexOf(Math.max(...action_probs))
+  if (action < 0) action = Math.floor(gridSize*gridSize / 2) + Math.floor(gridSize/2)
+  requestAnimationFrame(() => {
+    clearCellsOnClick(...gridIndexToCoords(action))
+    renderGrid();
+  });
+  console.log(action)
+  if (!gameOver) {
+    solveWithML()
+  }
 }
 
 initMinesGrid(); // intermediate
