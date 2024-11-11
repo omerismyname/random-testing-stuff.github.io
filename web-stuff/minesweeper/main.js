@@ -11,9 +11,8 @@ MLButton.onclick = () => solveWithML();
 const gameOverText = document.querySelector(".gameover");
 const flagCounter = document.querySelector(".flagcounter > .counter");
 
-let a = await fetch('./test.onnx')
-ort.env.wasm.wasmPaths = "./node_modules/onnxruntime-web/dist/"
-const session = await ort.InferenceSession.create('./test.onnx', { executionProviders: ['webgpu'], })
+ort.env.wasm.wasmPaths = "./node_modules/onnxruntime-web/dist/";
+const session = ort.InferenceSession.create('./test.onnx', { executionProviders: ['webgpu'], });
 
 // init canvas
 const canvas = document.querySelector(".main > .game > canvas");
@@ -478,6 +477,7 @@ function hideGuessUI() {
 
 async function solveWithML() {
   if (gameOver) return;
+  let local_session = await session;
   const state = new Float32Array(gridSize*gridSize);
   for (let i = 0; i < gridSize*gridSize; i++) {
     if (clearedGrid[i]) {
@@ -488,7 +488,7 @@ async function solveWithML() {
   }
   let stateTensor = new ort.Tensor('float32', state, [gridSize, gridSize])
   stateTensor = stateTensor.reshape([1, 1, gridSize, gridSize])
-  const result = await session.run({"input": stateTensor})
+  const result = await local_session.run({"input": stateTensor})
   const action_probs = result.output.data
   for (let i = 0; i < gridSize*gridSize; i++) {
     if (clearedGrid[i]) {
