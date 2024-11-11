@@ -11,7 +11,6 @@ MLButton.onclick = () => solveWithML();
 const gameOverText = document.querySelector(".gameover");
 const flagCounter = document.querySelector(".flagcounter > .counter");
 
-ort.env.wasm.wasmPaths = "./node_modules/onnxruntime-web/dist/";
 const session = ort.InferenceSession.create('./test.onnx', { executionProviders: ['webgpu'], });
 
 // init canvas
